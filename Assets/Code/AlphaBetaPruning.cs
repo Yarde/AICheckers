@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Code
 {
-    public class ABPruning : AI
+    public class AlphaBetaPruning : AI
     {
         public override Move Search(List<Pawn> state, bool isWhiteTurn, int depth,
-            GameManager.EvaluationFunction evaluationFunction, bool endgame)
+            EvaluationFunction evaluationFunction, bool endgame)
         {
             var playerName = isWhiteTurn ? "white" : "black";
             _isWhitePlayer = isWhiteTurn;

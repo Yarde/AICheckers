@@ -58,7 +58,7 @@ namespace Code
                     {
                         if (!hasHit || move.isAttack)
                         {
-                            var field = _gm.Board[(int) move.endPos.y, (int) move.endPos.x];
+                            var field = _gm._board[(int) move.endPos.y, (int) move.endPos.x];
                             field.GetComponent<Animation>().Play();
                         }
                     }

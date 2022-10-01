@@ -8,19 +8,17 @@ namespace Code
     {
         protected bool _isWhiteTurn;
         protected bool _isWhitePlayer;
-        protected int _boardSize;
+        private int _boardSize;
         protected bool _endgame;
-        protected GameManager.EvaluationFunction _evaluation;
-        protected GameObject _go;
+        protected EvaluationFunction _evaluation;
 
-        public void Setup(int boardSize, GameObject go)
+        public void Setup(int boardSize)
         {
             _boardSize = boardSize;
-            _go = go;
         }
 
         public abstract Move Search(List<Pawn> state, bool isWhiteTurn, int depth,
-            GameManager.EvaluationFunction evaluationFunction, bool endgame);
+            EvaluationFunction evaluationFunction, bool endgame);
 
         protected bool End(List<Pawn> state)
         {
@@ -48,9 +46,9 @@ namespace Code
             else
                 value = _evaluation switch
                 {
-                    GameManager.EvaluationFunction.PawnValue => PawnValue(state, value),
-                    GameManager.EvaluationFunction.PawnBoardValue => PawnBoardValue(state, value),
-                    GameManager.EvaluationFunction.Extra => ComplexValue(state, value),
+                    EvaluationFunction.PawnValue => PawnValue(state, value),
+                    EvaluationFunction.PawnBoardValue => PawnBoardValue(state, value),
+                    EvaluationFunction.Extra => ComplexValue(state, value),
                     _ => value
                 };
 
@@ -179,7 +177,7 @@ namespace Code
                     IsQueen = pawn.IsQueen, 
                     position = pawn.position, 
                     boardSize = _boardSize
-                }; //Instantiate(pawn, _go.transform);
+                };
                 if (pawn == move.pawn)
                 {
                     newPawn.position = new Vector2(move.endPos.x, move.endPos.y);
