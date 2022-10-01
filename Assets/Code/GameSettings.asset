@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e729c38ca3904963b71c6fbc1fd72b81, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
-  boardSize: 0
-  pawnRows: 0
-  _aiWhiteType: 0
-  _aiBlackType: 0
+  boardSize: 8
+  pawnRows: 2
+  _aiWhiteType: 1
+  _aiBlackType: 1
   _evWhite: 0
   _evBlack: 0
-  _aiWhiteDepth: 0
-  _aiBlackDepth: 0
+  _aiWhiteDepth: 4
+  _aiBlackDepth: 3
   _aiWhiteEndgame: 0
   _aiBlackEndgame: 0
   IsWhiteAI: 1
