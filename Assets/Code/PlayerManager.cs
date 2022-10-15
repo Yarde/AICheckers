@@ -14,6 +14,7 @@ namespace Code
     {
         private AIBase _aiWhite;
         private AIBase _aiBlack;
+        private AIBase _aiRandom;
         private PlayerData _whitePlayerData;
         private PlayerData _blackPlayerData;
 
@@ -24,7 +25,7 @@ namespace Code
         private bool _isWhiteTurn;
         private bool _gameOver;
         private Pawn _selected;
-        
+
         private float _whiteTime;
         private float _blackTime;
 
@@ -39,6 +40,7 @@ namespace Code
 
             _aiWhite = CreateAI(whitePlayerData.algorithmType);
             _aiBlack = CreateAI(blackPlayerData.algorithmType);
+            _aiRandom = CreateAI(AlgorithmType.Random);
         }
 
         private AIBase CreateAI(AlgorithmType aiType)
@@ -58,12 +60,16 @@ namespace Code
 
         public async UniTask MakeTurn(List<Pawn> pawns)
         {
-            var move = _isWhiteTurn
-                ? _aiWhite.Search(pawns, _isWhiteTurn, _whitePlayerData)
-                : _aiBlack.Search(pawns, _isWhiteTurn, _blackPlayerData);
+            var playerData = _isWhiteTurn ? _whitePlayerData : _blackPlayerData;
 
+            var player = _turnCounter / 2 < playerData.randomStartMoves
+                ? _aiRandom
+                : _isWhiteTurn
+                    ? _aiWhite
+                    : _aiBlack;
+            var move = player.Search(pawns, _isWhiteTurn, playerData);
             var result = MakeAiTurn(await move, pawns);
-            
+
             if (result != GameResult.InProgress)
             {
                 _whiteTime *= 1_000;
@@ -72,7 +78,7 @@ namespace Code
                 Debug.Log($"Game took {Time.realtimeSinceStartup - _gameStart} seconds");
                 Debug.Log($"White used {_whiteTime} ms avg move time {_whiteTime / _turnCounter / 2} ms");
                 Debug.Log($"Black used {_blackTime} ms avg move time {_blackTime / _turnCounter / 2} ms");
-                
+
                 // todo not reload
                 SceneManager.LoadScene(0);
             }
@@ -92,7 +98,7 @@ namespace Code
                 return CheckWin(pawns);
             }
 
-            return GameResult.Draw;
+            return GameResult.Pat;
         }
 
         private void GenerateMoves(List<Pawn> pawns)
@@ -131,6 +137,7 @@ namespace Code
             {
                 return GameResult.BlackWin;
             }
+
             if (pawns.All(p => p.IsWhite))
             {
                 return GameResult.WhiteWin;
@@ -144,12 +151,13 @@ namespace Code
             return GameResult.InProgress;
         }
     }
-    
+
     public enum GameResult
     {
         WhiteWin,
         BlackWin,
         Draw,
+        Pat,
         InProgress
     }
 }

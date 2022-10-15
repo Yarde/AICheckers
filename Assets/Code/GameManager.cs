@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Code
 {
@@ -22,8 +20,8 @@ namespace Code
         [SerializeField] private PlayerData whitePlayerData;
         [SerializeField] private PlayerData blackPlayerData;
 
-        public GameObject[,] Board;
-        public List<Pawn> pawns;
+        private GameObject[,] _board;
+        private List<Pawn> _pawns;
 
         private bool _turnInProgress;
         private bool _gameOver;
@@ -34,8 +32,8 @@ namespace Code
         {
             Application.runInBackground = true;
 
-            Board = new GameObject[boardSize, boardSize];
-            pawns = new List<Pawn>();
+            _board = new GameObject[boardSize, boardSize];
+            _pawns = new List<Pawn>();
 
             boardObject.size = new Vector3(boardSize, boardSize, 1);
             boardObject.center = new Vector3((boardSize - 1) / 2.0f, (boardSize - 1) / 2.0f, 0);
@@ -54,15 +52,15 @@ namespace Code
             }
 
             _turnInProgress = true;
-            await _playerManager.MakeTurn(pawns);
+            await _playerManager.MakeTurn(_pawns);
             _turnInProgress = false;
         }
 
         private void GenerateMoves()
         {
-            foreach (var pawn in pawns)
+            foreach (var pawn in _pawns)
             {
-                pawn.moves = pawn.PossibleMoves(pawns);
+                pawn.moves = pawn.PossibleMoves(_pawns);
             }
         }
 
@@ -77,7 +75,7 @@ namespace Code
                     var square = Instantiate(squarePrefab, new Vector3(x, y, 0), Quaternion.identity,
                         boardObject.transform);
                     square.name = $"S{y}-{x}";
-                    Board[y, x] = square;
+                    _board[y, x] = square;
 
                     if ((y + x) % 2 == 0 && (y < pawnRows || y >= boardSize - pawnRows))
                     {
@@ -91,13 +89,18 @@ namespace Code
                             IsWhite = y <= boardSize / 2,
                             GO = pawnGO
                         };
-                        //Instantiate(pawnPrefab, new Vector3(x, y, 0), Quaternion.identity, pawnsObject.transform);
-                        pawns.Add(pawn);
+                        _pawns.Add(pawn);
                     }
                 }
             }
 
             GenerateMoves();
+        }
+
+        public void AnimateMoves(Move move)
+        {
+            var field = _board[(int)move.endPos.y, (int)move.endPos.x];
+            field.GetComponent<Animation>().Play();
         }
     }
 }

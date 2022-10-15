@@ -9,7 +9,7 @@ namespace Code.AI
         public override async UniTask<Move> Search(List<Pawn> state, bool isWhiteTurn, PlayerData data)
         {
             var moves = Actions(state, isWhiteTurn);
-            return moves[Random.Range(0, moves.Count - 1)];
+            return moves.Count == 0 ? null : moves[Random.Range(0, moves.Count - 1)];
         }
     }
 }

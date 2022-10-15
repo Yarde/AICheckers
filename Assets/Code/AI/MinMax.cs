@@ -14,7 +14,7 @@ namespace Code.AI
             _evaluation = data.functionType;
             _endgame = data.useEndgameHeuristic;
             var (value, move) = MaxValue(state, _isWhiteTurn, data.searchDepth);
-            //Debug.Log($"best move value for {playerName} is {value}");
+            Debug.Log($"best move value for {playerName} is {value}");
             return move;
         }
 
@@ -22,15 +22,15 @@ namespace Code.AI
         {
             if (depth == 0 || End(state))
             {
-                //Debug.Log($"Ending branch depth: {depth}");
+                // Debug.Log($"Ending branch depth: {depth}");
                 return (Value(state), null);
             }
 
             var value = int.MinValue;
             Move move = null;
             var actions = Actions(state, isWhiteTurn);
-            var playerName = isWhiteTurn ? "white" : "black";
-            //Debug.Log($"possible moves {actions.Count} on depth {depth} during {playerName} turn");
+            // var playerName = isWhiteTurn ? "white" : "black";
+            // Debug.Log($"possible moves {actions.Count} on depth {depth} during {playerName} turn");
             foreach (var action in actions)
             {
                 var (value2, _) = MinValue(Result(state, action), !isWhiteTurn, depth - 1);
@@ -54,8 +54,8 @@ namespace Code.AI
             var value = int.MaxValue;
             Move move = null;
             var actions = Actions(state, isWhiteTurn);
-            var playerName = isWhiteTurn ? "white" : "black";
-            //Debug.Log($"possible moves {actions.Count} on depth {depth} during {playerName} turn");
+            // var playerName = isWhiteTurn ? "white" : "black";
+            // Debug.Log($"possible moves {actions.Count} on depth {depth} during {playerName} turn");
             foreach (var action in actions)
             {
                 var (value2, _) = MaxValue(Result(state, action), !isWhiteTurn, depth - 1);

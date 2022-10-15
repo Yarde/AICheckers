@@ -45,18 +45,18 @@ namespace Code
                 FindInDirection(pawns, new Vector2(-1, -1));
             }
             
-            ValidMovesOnly(moves);
+            ValidMovesOnly();
 
             return moves;
         }
         
-        private void ValidMovesOnly(List<Move> moves)
+        private void ValidMovesOnly()
         {
             var hasHit = moves.Any(x => x.isAttack);
 
             if (hasHit)
             {
-                moves.RemoveAll(x => x.hits.Count == 0);
+                moves.RemoveAll(x => !x.isAttack);
             }
         }
 

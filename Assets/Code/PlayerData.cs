@@ -9,5 +9,6 @@ namespace Code
         public EvaluationFunctionType functionType;
         public int searchDepth;
         public bool useEndgameHeuristic;
+        public int randomStartMoves;
     }
 }

@@ -8,12 +8,14 @@ namespace Code.AI
     public class HumanPlayer : AIBase
     {
         private Vector2 _mousePosition;
-        private Camera _camera;
+        private readonly Camera _camera;
+        private readonly GameManager _gameManager;
         private Pawn _selected;
 
         public HumanPlayer()
         {
             _camera = Camera.main;
+            _gameManager = Object.FindObjectOfType<GameManager>();
         }
 
         public override async UniTask<Move> Search(List<Pawn> pawns, bool isWhiteTurn, PlayerData data)
@@ -62,21 +64,16 @@ namespace Code.AI
         private void SelectPawn(int x, int y, List<Pawn> pawns, bool isWhiteTurn)
         {
             var pawn = pawns.FirstOrDefault(p => (int)p.position.x == x && (int)p.position.y == y);
-            if (pawn != null)
+            if (pawn == null) return;
+            if (pawn.IsWhite != isWhiteTurn) return;
+            
+            _selected = pawn;
+            var hasHit = HasHit(pawns, isWhiteTurn);
+            foreach (var move in _selected.moves)
             {
-                if (pawn.IsWhite == isWhiteTurn)
+                if (!hasHit || move.isAttack)
                 {
-                    _selected = pawn;
-                    var hasHit = HasHit(pawns, isWhiteTurn);
-                    foreach (var move in _selected.moves)
-                    {
-                        if (!hasHit || move.isAttack)
-                        {
-                            // todo animate available moves
-                            //var field = Board[(int)move.endPos.y, (int)move.endPos.x];
-                            //field.GetComponent<Animation>().Play();
-                        }
-                    }
+                    _gameManager.AnimateMoves(move);
                 }
             }
         }

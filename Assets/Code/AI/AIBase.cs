@@ -177,7 +177,7 @@ namespace Code.AI
                     IsQueen = pawn.IsQueen, 
                     position = pawn.position, 
                     boardSize = _boardSize
-                }; //Instantiate(pawn, _go.transform);
+                };
                 if (pawn == move.pawn)
                 {
                     newPawn.position = new Vector2(move.endPos.x, move.endPos.y);
@@ -210,7 +210,7 @@ namespace Code.AI
             return !HasHit(state, isWhiteTurn);
         }
 
-        private bool HasHit(List<Pawn> state, bool isWhiteTurn)
+        private bool HasHit(IEnumerable<Pawn> state, bool isWhiteTurn)
         {
             return state.Any(pawn => pawn.moves.Any(p => p.isAttack && pawn.IsWhite == isWhiteTurn));
         }
