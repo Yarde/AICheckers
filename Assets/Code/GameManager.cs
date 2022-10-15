@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -45,7 +46,7 @@ namespace Code
             GenerateBoard();
         }
 
-        private void Update()
+        private async void Update()
         {
             if (_turnInProgress)
             {
@@ -53,7 +54,7 @@ namespace Code
             }
 
             _turnInProgress = true;
-            _playerManager.MakeTurn(pawns);
+            await _playerManager.MakeTurn(pawns);
             _turnInProgress = false;
         }
 

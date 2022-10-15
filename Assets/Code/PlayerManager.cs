@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Code.AI;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -44,24 +45,24 @@ namespace Code
         {
             AIBase ai = aiType switch
             {
-                //AlgorithmType.HumanPlayer => new HumanPlayer(null),
+                AlgorithmType.HumanPlayer => new HumanPlayer(),
                 AlgorithmType.MinMax => new MinMax(),
                 AlgorithmType.AlphaBetaPruning => new AlphaBetaPruning(),
                 AlgorithmType.Random => new RandomSearch(),
                 _ => throw new ArgumentOutOfRangeException(nameof(aiType), aiType, null)
             };
 
-            ai.Setup(1, null);
+            ai.Setup(_boardSize);
             return ai;
         }
 
-        public void MakeTurn(List<Pawn> pawns)
+        public async UniTask MakeTurn(List<Pawn> pawns)
         {
             var move = _isWhiteTurn
                 ? _aiWhite.Search(pawns, _isWhiteTurn, _whitePlayerData)
                 : _aiBlack.Search(pawns, _isWhiteTurn, _blackPlayerData);
 
-            var result = MakeAiTurn(move, pawns);
+            var result = MakeAiTurn(await move, pawns);
             
             if (result != GameResult.InProgress)
             {

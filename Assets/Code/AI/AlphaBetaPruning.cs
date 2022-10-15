@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Code.AI
 {
     public class AlphaBetaPruning : AIBase
     {
-        public override Move Search(List<Pawn> state, bool isWhiteTurn, PlayerData data)
+        public override async UniTask<Move> Search(List<Pawn> state, bool isWhiteTurn, PlayerData data)
         {
             var playerName = isWhiteTurn ? "white" : "black";
             _isWhitePlayer = isWhiteTurn;

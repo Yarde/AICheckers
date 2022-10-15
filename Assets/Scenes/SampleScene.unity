@@ -353,7 +353,7 @@ MonoBehaviour:
   whiteSquare: {fileID: 5585115283175931956, guid: f58b294832cbaf74e9eee07e965d39ff, type: 3}
   blackSquare: {fileID: 1212884717880796873, guid: 8010d96d479533e4582daf7e891563a0, type: 3}
   whitePlayerData:
-    algorithmType: 2
+    algorithmType: 0
     functionType: 0
     searchDepth: 4
     useEndgameHeuristic: 0

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Code.AI
@@ -8,18 +9,16 @@ namespace Code.AI
     {
         protected bool _isWhiteTurn;
         protected bool _isWhitePlayer;
-        protected int _boardSize;
+        private int _boardSize;
         protected bool _endgame;
         protected EvaluationFunctionType _evaluation;
-        protected GameObject _go;
 
-        public void Setup(int boardSize, GameObject go)
+        public void Setup(int boardSize)
         {
             _boardSize = boardSize;
-            _go = go;
         }
 
-        public abstract Move Search(List<Pawn> pawns, bool isWhiteTurn, PlayerData whitePlayerData);
+        public abstract UniTask<Move> Search(List<Pawn> pawns, bool isWhiteTurn, PlayerData whitePlayerData);
 
         protected bool End(List<Pawn> state)
         {
