@@ -2,9 +2,9 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Code
+namespace Code.AI
 {
-    public abstract class AI
+    public abstract class AIBase
     {
         protected bool _isWhiteTurn;
         protected bool _isWhitePlayer;
@@ -19,8 +19,7 @@ namespace Code
             _go = go;
         }
 
-        public abstract Move Search(List<Pawn> state, bool isWhiteTurn, int depth,
-            EvaluationFunctionType evaluationFunction, bool endgame);
+        public abstract Move Search(List<Pawn> pawns, bool isWhiteTurn, PlayerData whitePlayerData);
 
         protected bool End(List<Pawn> state)
         {
@@ -56,7 +55,7 @@ namespace Code
 
             return value;
         }
-        
+
         private int PawnValue(IEnumerable<Pawn> state, int value)
         {
             foreach (var pawn in state)

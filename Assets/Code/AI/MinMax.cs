@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Code
+namespace Code.AI
 {
-    public class MinMax : AI
+    public class MinMax : AIBase
     {
-        public override Move Search(List<Pawn> state, bool isWhiteTurn, int depth,
-            EvaluationFunctionType evaluationFunction, bool endgame)
+        public override Move Search(List<Pawn> state, bool isWhiteTurn, PlayerData data)
         {
             var playerName = isWhiteTurn ? "white" : "black";
             _isWhitePlayer = isWhiteTurn;
             _isWhiteTurn = isWhiteTurn;
-            _evaluation = evaluationFunction;
-            _endgame = endgame;
-            var (value, move) = MaxValue(state, _isWhiteTurn, depth);
+            _evaluation = data.functionType;
+            _endgame = data.useEndgameHeuristic;
+            var (value, move) = MaxValue(state, _isWhiteTurn, data.searchDepth);
             //Debug.Log($"best move value for {playerName} is {value}");
             return move;
         }
