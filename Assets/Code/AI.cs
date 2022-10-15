@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Code
 {
-    public abstract class AI : MonoBehaviour
+    public abstract class AI
     {
         protected bool _isWhiteTurn;
         protected bool _isWhitePlayer;

@@ -202,12 +202,12 @@ public class GameManager : MonoBehaviour
         {
             if (_aiWhiteType == Algorithm.Minmax)
             {
-                _aiWhite = aiObject.AddComponent<MinMax>();
+                _aiWhite = new MinMax();
                 _aiWhite.Setup(boardSize, aiObject);
             }
             else
             {
-                _aiWhite = aiObject.AddComponent<ABPruning>();
+                _aiWhite = new ABPruning();
                 _aiWhite.Setup(boardSize, aiObject);
             }
         }
@@ -216,17 +216,17 @@ public class GameManager : MonoBehaviour
         {
             if (_aiBlackType == Algorithm.Minmax)
             {
-                _aiBlack = aiObject.AddComponent<MinMax>();
+                _aiBlack = new MinMax();
                 _aiBlack.Setup(boardSize, aiObject);
             }
             else
             {
-                _aiBlack = aiObject.AddComponent<ABPruning>();
+                _aiBlack = new ABPruning();
                 _aiBlack.Setup(boardSize, aiObject);
             }
         }
 
-        _aiRandom = aiObject.AddComponent<RandomSearch>();
+        _aiRandom = new RandomSearch();
         _aiRandom.Setup(boardSize, aiObject);
     }
     
