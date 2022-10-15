@@ -6,7 +6,7 @@ namespace Code
     public class MinMax : AI
     {
         public override Move Search(List<Pawn> state, bool isWhiteTurn, int depth,
-            GameManager.EvaluationFunction evaluationFunction, bool endgame)
+            EvaluationFunctionType evaluationFunction, bool endgame)
         {
             var playerName = isWhiteTurn ? "white" : "black";
             _isWhitePlayer = isWhiteTurn;

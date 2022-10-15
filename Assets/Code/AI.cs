@@ -10,7 +10,7 @@ namespace Code
         protected bool _isWhitePlayer;
         protected int _boardSize;
         protected bool _endgame;
-        protected GameManager.EvaluationFunction _evaluation;
+        protected EvaluationFunctionType _evaluation;
         protected GameObject _go;
 
         public void Setup(int boardSize, GameObject go)
@@ -20,7 +20,7 @@ namespace Code
         }
 
         public abstract Move Search(List<Pawn> state, bool isWhiteTurn, int depth,
-            GameManager.EvaluationFunction evaluationFunction, bool endgame);
+            EvaluationFunctionType evaluationFunction, bool endgame);
 
         protected bool End(List<Pawn> state)
         {
@@ -48,9 +48,9 @@ namespace Code
             else
                 value = _evaluation switch
                 {
-                    GameManager.EvaluationFunction.PawnValue => PawnValue(state, value),
-                    GameManager.EvaluationFunction.PawnBoardValue => PawnBoardValue(state, value),
-                    GameManager.EvaluationFunction.Extra => ComplexValue(state, value),
+                    EvaluationFunctionType.PawnValue => PawnValue(state, value),
+                    EvaluationFunctionType.PawnBoardValue => PawnBoardValue(state, value),
+                    EvaluationFunctionType.Extra => ComplexValue(state, value),
                     _ => value
                 };
 
