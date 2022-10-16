@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Code.EvaluationFunction
 {
-    public class EndgameEvaluator : Evaluator
+    public class EndgameEvaluator : EvaluatorBase
     {
         public override int Evaluate(IEnumerable<Pawn> state, bool isWhitePlayer, int value)
         {

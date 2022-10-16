@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Code.AI
 {
-    public class HumanPlayer : AIBase
+    public class HumanPlayer : PlayerBase
     {
         private Vector2 _mousePosition;
         private readonly Camera _camera;

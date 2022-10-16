@@ -6,7 +6,7 @@ namespace Code
     public class Move
     {
         public Pawn pawn;
-        public Vector2 startPos;
+        private Vector2 startPos;
         public Vector2 endPos;
         public List<Pawn> hits;
 

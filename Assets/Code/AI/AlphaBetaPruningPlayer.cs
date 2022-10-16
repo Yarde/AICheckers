@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Code.AI
 {
-    public class AlphaBetaPruning : AIBase
+    public class AlphaBetaPruningPlayer : PlayerBase
     {
-        public AlphaBetaPruning(int boardSize, PlayerData data) : base(boardSize, data)
+        public AlphaBetaPruningPlayer(int boardSize, PlayerData data) : base(boardSize, data)
         {
         }
 

@@ -2,7 +2,7 @@
 
 namespace Code.View
 {
-    public class PawnGO : MonoBehaviour
+    public class PawnView : MonoBehaviour
     {
         [SerializeField] public SpriteRenderer queenImage;
     }

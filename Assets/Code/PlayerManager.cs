@@ -12,9 +12,9 @@ namespace Code
 {
     public class PlayerManager
     {
-        private AIBase _aiWhite;
-        private AIBase _aiBlack;
-        private AIBase _aiRandom;
+        private PlayerBase _playerWhite;
+        private PlayerBase _playerBlack;
+        private PlayerBase _playerRandom;
         private PlayerData _whitePlayerData;
         private PlayerData _blackPlayerData;
 
@@ -38,22 +38,22 @@ namespace Code
             _whitePlayerData = whitePlayerData;
             _blackPlayerData = blackPlayerData;
 
-            _aiWhite = CreateAI(whitePlayerData);
-            _aiBlack = CreateAI(blackPlayerData);
-            _aiRandom = CreateAI(new PlayerData{algorithmType = AlgorithmType.Random});
+            _playerWhite = CreateAI(whitePlayerData);
+            _playerBlack = CreateAI(blackPlayerData);
+            _playerRandom = CreateAI(new PlayerData{algorithmType = AlgorithmType.Random});
         }
 
-        private AIBase CreateAI(PlayerData data)
+        private PlayerBase CreateAI(PlayerData data)
         {
-            AIBase ai = data.algorithmType switch
+            PlayerBase player = data.algorithmType switch
             {
                 AlgorithmType.HumanPlayer => new HumanPlayer(_boardSize, data),
-                AlgorithmType.MinMax => new MinMax(_boardSize, data),
-                AlgorithmType.AlphaBetaPruning => new AlphaBetaPruning(_boardSize, data),
-                AlgorithmType.Random => new RandomSearch(_boardSize, data),
+                AlgorithmType.MinMax => new MinMaxPlayer(_boardSize, data),
+                AlgorithmType.AlphaBetaPruning => new AlphaBetaPruningPlayer(_boardSize, data),
+                AlgorithmType.Random => new RandomSearchPlayer(_boardSize, data),
                 _ => throw new ArgumentOutOfRangeException()
             };
-            return ai;
+            return player;
         }
 
         public async UniTask MakeTurn(List<Pawn> pawns)
@@ -61,10 +61,10 @@ namespace Code
             var playerData = _isWhiteTurn ? _whitePlayerData : _blackPlayerData;
 
             var player = _turnCounter / 2 < playerData.randomStartMoves
-                ? _aiRandom
+                ? _playerRandom
                 : _isWhiteTurn
-                    ? _aiWhite
-                    : _aiBlack;
+                    ? _playerWhite
+                    : _playerBlack;
             var move = player.Search(pawns, _isWhiteTurn, playerData);
             var result = MakeAiTurn(await move, pawns);
 
@@ -109,7 +109,7 @@ namespace Code
 
         private void MovePawn(Move move)
         {
-            _selected.GO.transform.position = new Vector3(move.endPos.x, move.endPos.y, 0);
+            _selected.view.transform.position = new Vector3(move.endPos.x, move.endPos.y, 0);
             _selected.position = new Vector2(move.endPos.x, move.endPos.y);
 
             if (_selected.IsWhite && (int)move.endPos.y == _boardSize - 1 ||
@@ -125,7 +125,7 @@ namespace Code
             {
                 _lastAttackTurn = _turnCounter;
                 pawns.Remove(hit);
-                Object.Destroy(hit.GO.gameObject);
+                Object.Destroy(hit.view.gameObject);
             }
         }
 

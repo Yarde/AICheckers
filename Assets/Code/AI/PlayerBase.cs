@@ -7,15 +7,15 @@ using UnityEngine;
 
 namespace Code.AI
 {
-    public abstract class AIBase
+    public abstract class PlayerBase
     {
         protected bool _isWhiteTurn;
         protected bool _isWhitePlayer;
         private readonly int _boardSize;
         private readonly bool _endgame;
-        private Evaluator _evaluator;
+        private EvaluatorBase _evaluator;
 
-        protected AIBase(int boardSize, PlayerData data)
+        protected PlayerBase(int boardSize, PlayerData data)
         {
             _boardSize = boardSize;
             _endgame = data.useEndgameHeuristic;

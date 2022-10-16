@@ -8,7 +8,7 @@ namespace Code
 {
     public class Pawn
     {
-        public PawnGO GO;
+        public PawnView view;
         public int boardSize;
         public Vector2 position;
         public List<Move> moves = new List<Move>();
@@ -20,9 +20,9 @@ namespace Code
             set
             {
                 isQueen = value;
-                if (GO)
+                if (view)
                 {
-                    GO.queenImage.gameObject.SetActive(isQueen); 
+                    view.queenImage.gameObject.SetActive(isQueen); 
                 }
             }
         }

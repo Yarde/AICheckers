@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Code.EvaluationFunction
 {
-    public class ComplexEvaluator : Evaluator
+    public class ComplexEvaluator : EvaluatorBase
     {
         public override int Evaluate(IEnumerable<Pawn> state, bool isWhitePlayer, int value)
         {

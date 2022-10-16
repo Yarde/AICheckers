@@ -13,8 +13,8 @@ namespace Code
         [SerializeField] private Transform cameraPos;
         [SerializeField] private GameObject pawnsObject;
 
-        [SerializeField] private PawnGO whitePawn;
-        [SerializeField] private PawnGO blackPawn;
+        [SerializeField] private PawnView whitePawn;
+        [SerializeField] private PawnView blackPawn;
         [SerializeField] private GameObject whiteSquare;
         [SerializeField] private GameObject blackSquare;
 
@@ -88,7 +88,7 @@ namespace Code
                             boardSize = boardSize,
                             position = new Vector2(x, y),
                             IsWhite = y <= boardSize / 2,
-                            GO = pawnGO
+                            view = pawnGO
                         };
                         _pawns.Add(pawn);
                     }

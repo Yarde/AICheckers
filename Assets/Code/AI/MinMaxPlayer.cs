@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Code.AI
 {
-    public class MinMax : AIBase
+    public class MinMaxPlayer : PlayerBase
     {
-        public MinMax(int boardSize, PlayerData data) : base(boardSize, data)
+        public MinMaxPlayer(int boardSize, PlayerData data) : base(boardSize, data)
         {
         }
 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Code.EvaluationFunction
 {
-    public class PawnBoardValueEvaluator : Evaluator
+    public class PawnBoardValueEvaluator : EvaluatorBase
     {
         private int _boardSize;
         
