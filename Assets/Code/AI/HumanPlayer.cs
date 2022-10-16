@@ -12,7 +12,7 @@ namespace Code.AI
         private readonly GameManager _gameManager;
         private Pawn _selected;
 
-        public HumanPlayer()
+        public HumanPlayer(int boardSize, PlayerData data) : base(boardSize, data)
         {
             _camera = Camera.main;
             _gameManager = Object.FindObjectOfType<GameManager>();
@@ -36,7 +36,7 @@ namespace Code.AI
             {
                 return null;
             }
-            
+
             UpdateMouse();
 
             var x = (int)_mousePosition.x;
@@ -66,7 +66,7 @@ namespace Code.AI
             var pawn = pawns.FirstOrDefault(p => (int)p.position.x == x && (int)p.position.y == y);
             if (pawn == null) return;
             if (pawn.IsWhite != isWhiteTurn) return;
-            
+
             _selected = pawn;
             var hasHit = HasHit(pawns, isWhiteTurn);
             foreach (var move in _selected.moves)

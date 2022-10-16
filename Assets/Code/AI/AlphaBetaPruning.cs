@@ -6,13 +6,14 @@ namespace Code.AI
 {
     public class AlphaBetaPruning : AIBase
     {
+        public AlphaBetaPruning(int boardSize, PlayerData data) : base(boardSize, data)
+        {
+        }
+
         public override async UniTask<Move> Search(List<Pawn> state, bool isWhiteTurn, PlayerData data)
         {
-            var playerName = isWhiteTurn ? "white" : "black";
             _isWhitePlayer = isWhiteTurn;
             _isWhiteTurn = isWhiteTurn;
-            _evaluation = data.functionType;
-            _endgame = data.useEndgameHeuristic;
 
             var actions = Actions(state, isWhiteTurn);
             if (actions.Count == 1)
@@ -21,15 +22,16 @@ namespace Code.AI
             }
 
             var (value, move) = MaxValue(state, _isWhiteTurn, data.searchDepth, float.MinValue, float.MaxValue);
+            // var playerName = isWhiteTurn ? "white" : "black";
             //Debug.Log($"best move value for {playerName} is {value}");
             return move;
         }
 
         private (int, Move) MaxValue(List<Pawn> state, bool isWhiteTurn, int depth, float alpha, float beta)
         {
-            if (depth == 0 || End(state))
+            if (depth == 0 || IsGameFinished(state))
             {
-                return (Value(state), null);
+                return (GetStateValue(state), null);
             }
 
             var value = int.MinValue;
@@ -56,9 +58,9 @@ namespace Code.AI
 
         private (int, Move) MinValue(List<Pawn> state, bool isWhiteTurn, int depth, float alpha, float beta)
         {
-            if (depth == 0 || End(state))
+            if (depth == 0 || IsGameFinished(state))
             {
-                return (Value(state), null);
+                return (GetStateValue(state), null);
             }
 
             var value = int.MaxValue;

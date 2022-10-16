@@ -38,23 +38,21 @@ namespace Code
             _whitePlayerData = whitePlayerData;
             _blackPlayerData = blackPlayerData;
 
-            _aiWhite = CreateAI(whitePlayerData.algorithmType);
-            _aiBlack = CreateAI(blackPlayerData.algorithmType);
-            _aiRandom = CreateAI(AlgorithmType.Random);
+            _aiWhite = CreateAI(whitePlayerData);
+            _aiBlack = CreateAI(blackPlayerData);
+            _aiRandom = CreateAI(new PlayerData{algorithmType = AlgorithmType.Random});
         }
 
-        private AIBase CreateAI(AlgorithmType aiType)
+        private AIBase CreateAI(PlayerData data)
         {
-            AIBase ai = aiType switch
+            AIBase ai = data.algorithmType switch
             {
-                AlgorithmType.HumanPlayer => new HumanPlayer(),
-                AlgorithmType.MinMax => new MinMax(),
-                AlgorithmType.AlphaBetaPruning => new AlphaBetaPruning(),
-                AlgorithmType.Random => new RandomSearch(),
-                _ => throw new ArgumentOutOfRangeException(nameof(aiType), aiType, null)
+                AlgorithmType.HumanPlayer => new HumanPlayer(_boardSize, data),
+                AlgorithmType.MinMax => new MinMax(_boardSize, data),
+                AlgorithmType.AlphaBetaPruning => new AlphaBetaPruning(_boardSize, data),
+                AlgorithmType.Random => new RandomSearch(_boardSize, data),
+                _ => throw new ArgumentOutOfRangeException()
             };
-
-            ai.Setup(_boardSize);
             return ai;
         }
 
@@ -143,7 +141,7 @@ namespace Code
                 return GameResult.WhiteWin;
             }
 
-            if (_turnCounter - _lastAttackTurn > 50)
+            if (_turnCounter - _lastAttackTurn > 100)
             {
                 return GameResult.Draw;
             }

@@ -328,9 +328,9 @@ MonoBehaviour:
     useEndgameHeuristic: 0
     randomStartMoves: 0
   blackPlayerData:
-    algorithmType: 1
-    functionType: 1
-    searchDepth: 4
+    algorithmType: 2
+    functionType: 2
+    searchDepth: 5
     useEndgameHeuristic: 1
     randomStartMoves: 2
 --- !u!4 &1925603073

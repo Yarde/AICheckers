@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Code.View;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,7 +26,7 @@ namespace Code
                 }
             }
         }
-
+        
         public bool IsSafe => position.x == 0 || (int) position.x == boardSize - 1;
         public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? boardSize - 1 - (int) position.y : (int) position.y;
 

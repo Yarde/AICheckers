@@ -6,13 +6,15 @@ namespace Code.AI
 {
     public class MinMax : AIBase
     {
+        public MinMax(int boardSize, PlayerData data) : base(boardSize, data)
+        {
+        }
+
         public override async UniTask<Move> Search(List<Pawn> state, bool isWhiteTurn, PlayerData data)
         {
             var playerName = isWhiteTurn ? "white" : "black";
             _isWhitePlayer = isWhiteTurn;
             _isWhiteTurn = isWhiteTurn;
-            _evaluation = data.functionType;
-            _endgame = data.useEndgameHeuristic;
             var (value, move) = MaxValue(state, _isWhiteTurn, data.searchDepth);
             Debug.Log($"best move value for {playerName} is {value}");
             return move;
@@ -20,10 +22,10 @@ namespace Code.AI
 
         private (int, Move) MaxValue(List<Pawn> state, bool isWhiteTurn, int depth)
         {
-            if (depth == 0 || End(state))
+            if (depth == 0 || IsGameFinished(state))
             {
                 // Debug.Log($"Ending branch depth: {depth}");
-                return (Value(state), null);
+                return (GetStateValue(state), null);
             }
 
             var value = int.MinValue;
@@ -46,9 +48,9 @@ namespace Code.AI
 
         private (int, Move) MinValue(List<Pawn> state, bool isWhiteTurn, int depth)
         {
-            if (depth == 0 || End(state))
+            if (depth == 0 || IsGameFinished(state))
             {
-                return (Value(state), null);
+                return (GetStateValue(state), null);
             }
 
             var value = int.MaxValue;

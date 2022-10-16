@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Code.EvaluationFunction;
+using Code.Utils;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -9,23 +11,31 @@ namespace Code.AI
     {
         protected bool _isWhiteTurn;
         protected bool _isWhitePlayer;
-        private int _boardSize;
-        protected bool _endgame;
-        protected EvaluationFunctionType _evaluation;
+        private readonly int _boardSize;
+        private readonly bool _endgame;
+        private Evaluator _evaluator;
 
-        public void Setup(int boardSize)
+        protected AIBase(int boardSize, PlayerData data)
         {
             _boardSize = boardSize;
+            _endgame = data.useEndgameHeuristic;
+            _evaluator = data.functionType switch
+            {
+                EvaluationFunctionType.PawnValue => new PawnValueEvaluator(),
+                EvaluationFunctionType.PawnBoardValue => new PawnBoardValueEvaluator(_boardSize),
+                EvaluationFunctionType.Complex => new ComplexEvaluator()
+            };
         }
 
         public abstract UniTask<Move> Search(List<Pawn> pawns, bool isWhiteTurn, PlayerData whitePlayerData);
 
-        protected bool End(List<Pawn> state)
+        protected bool IsGameFinished(List<Pawn> state)
         {
+            // todo add draw and pat conditions here
             return state.All(p => p.IsWhite) || state.All(p => !p.IsWhite);
         }
 
-        protected int Value(List<Pawn> state)
+        protected int GetStateValue(List<Pawn> state)
         {
             var value = 0;
 
@@ -33,110 +43,19 @@ namespace Code.AI
             {
                 value = 1000;
             }
-            
+
             if (state.All(p => p.IsWhite == !_isWhitePlayer))
             {
                 value = -1000;
             }
 
-            if (_endgame && state.All(p =>  p.IsQueen))
+            // todo change that condition
+            if (_endgame && state.All(p => p.IsQueen))
             {
-                value = EndgameValue(state);
-            }
-            else
-                value = _evaluation switch
-                {
-                    EvaluationFunctionType.PawnValue => PawnValue(state, value),
-                    EvaluationFunctionType.PawnBoardValue => PawnBoardValue(state, value),
-                    EvaluationFunctionType.Extra => ComplexValue(state, value),
-                    _ => value
-                };
-
-            return value;
-        }
-
-        private int PawnValue(IEnumerable<Pawn> state, int value)
-        {
-            foreach (var pawn in state)
-            {
-                if (_isWhitePlayer == pawn.IsWhite || !_isWhitePlayer == !pawn.IsWhite)
-                {
-                    value += pawn.IsQueen ? 2 : 1;
-                }
-                else
-                {
-                    value -= pawn.IsQueen ? 2 : 1;
-                }
+                _evaluator = new EndgameEvaluator();
             }
 
-            return value;
-        }
-
-        private int PawnBoardValue(IEnumerable<Pawn> state, int value)
-        {
-            foreach (var pawn in state)
-            {
-                var v = (pawn.IsWhite && pawn.position.y >= _boardSize / 2.0f) ||
-                        (!pawn.IsWhite && pawn.position.y < _boardSize / 2.0f)
-                    ? 7
-                    : 5;
-                if (_isWhitePlayer == pawn.IsWhite || !_isWhitePlayer == !pawn.IsWhite)
-                {
-                    value += pawn.IsQueen ? 10 : v;
-                }
-                else
-                {
-                    value -= pawn.IsQueen ? 10 : v;
-                }
-            }
-
-            return value;
-        }
-
-        private int ComplexValue(IEnumerable<Pawn> state, int value)
-        {
-            foreach (var pawn in state)
-            {
-                var pval = pawn.IsQueen ? 50 : 25;
-                pval += pawn.moves.Count * 5;
-                pval += pawn.IsSafe ? 3 : 0;
-                pval += pawn.DistanceToPromotion;
-                
-                if (_isWhitePlayer == pawn.IsWhite || !_isWhitePlayer == !pawn.IsWhite)
-                {
-                    value += pval;
-                }
-                else
-                {
-                    value -= pval;
-                }
-            }
-
-            return value;
-        }
-
-        private int EndgameValue(List<Pawn> state)
-        {
-            var value = 100;
-            var myPawns = state.Where(p => _isWhitePlayer == p.IsWhite).ToList();
-            var enemyPawns = state.Where(p => _isWhitePlayer == !p.IsWhite).ToList();
-            foreach (var myPawn in myPawns)
-            {
-                foreach (var enemyPawn in enemyPawns)
-                {
-                    if (myPawns.Count >= enemyPawns.Count)
-                    {
-                        value -= (int) Mathf.Abs(myPawn.position.x - enemyPawn.position.x);
-                        value -= (int) Mathf.Abs(myPawn.position.y - enemyPawn.position.y);
-                    }
-                    else
-                    {
-                        value += (int) Mathf.Abs(myPawn.position.x - enemyPawn.position.x);
-                        value += (int) Mathf.Abs(myPawn.position.y - enemyPawn.position.y);
-                    }
-                }
-            }
-
+            value = _evaluator.Evaluate(state, _isWhitePlayer, value);
             return value;
         }
 
@@ -149,7 +68,7 @@ namespace Code.AI
                 {
                     foreach (var move in pawn.moves)
                     {
-                        var isValid = ValidMove(move, state, isWhiteTurn);
+                        var isValid = IsMoveValid(move, state, isWhiteTurn);
                         if (isValid)
                         {
                             moves.Add(move);
@@ -173,17 +92,17 @@ namespace Code.AI
 
                 var newPawn = new Pawn
                 {
-                    IsWhite = pawn.IsWhite, 
-                    IsQueen = pawn.IsQueen, 
-                    position = pawn.position, 
+                    IsWhite = pawn.IsWhite,
+                    IsQueen = pawn.IsQueen,
+                    position = pawn.position,
                     boardSize = _boardSize
                 };
                 if (pawn == move.pawn)
                 {
                     newPawn.position = new Vector2(move.endPos.x, move.endPos.y);
 
-                    if (newPawn.IsWhite && (int) move.endPos.y == _boardSize - 1 ||
-                        !newPawn.IsWhite && (int) move.endPos.y == 0)
+                    if (newPawn.IsWhite && (int)move.endPos.y == _boardSize - 1 ||
+                        !newPawn.IsWhite && (int)move.endPos.y == 0)
                     {
                         newPawn.IsQueen = true;
                     }
@@ -200,7 +119,7 @@ namespace Code.AI
             return newState;
         }
 
-        private bool ValidMove(Move move, List<Pawn> state, bool isWhiteTurn)
+        private bool IsMoveValid(Move move, List<Pawn> state, bool isWhiteTurn)
         {
             if (move.isAttack)
             {
@@ -212,7 +131,7 @@ namespace Code.AI
 
         private bool HasHit(IEnumerable<Pawn> state, bool isWhiteTurn)
         {
-            return state.Any(pawn => pawn.moves.Any(p => p.isAttack && pawn.IsWhite == isWhiteTurn));
+            return state.Any(pawn => pawn.moves.Any(p => p.isAttack && pawn.IsMine(isWhiteTurn)));
         }
     }
 }

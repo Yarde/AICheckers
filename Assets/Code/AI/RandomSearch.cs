@@ -11,5 +11,9 @@ namespace Code.AI
             var moves = Actions(state, isWhiteTurn);
             return moves.Count == 0 ? null : moves[Random.Range(0, moves.Count - 1)];
         }
+
+        public RandomSearch(int boardSize, PlayerData data) : base(boardSize, data)
+        {
+        }
     }
 }
