@@ -3,7 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.AI
+namespace Code.Logic.AI
 {
     public class HumanPlayer : PlayerBase
     {
@@ -48,7 +48,7 @@ namespace Code.AI
             }
             else if (Input.GetMouseButtonUp(0) && x > -1 && y > -1 && _selected != null)
             {
-                var move = ValidMove((int)_selected.position.x, (int)_selected.position.y, x, y, pawns, isWhiteTurn);
+                var move = ValidMove((int)_selected.Position.x, (int)_selected.Position.y, x, y, pawns, isWhiteTurn);
                 _selected = null;
                 if (move != null)
                 {
@@ -63,13 +63,13 @@ namespace Code.AI
 
         private void SelectPawn(int x, int y, List<Pawn> pawns, bool isWhiteTurn)
         {
-            var pawn = pawns.FirstOrDefault(p => (int)p.position.x == x && (int)p.position.y == y);
+            var pawn = pawns.FirstOrDefault(p => (int)p.Position.x == x && (int)p.Position.y == y);
             if (pawn == null) return;
             if (pawn.IsWhite != isWhiteTurn) return;
 
             _selected = pawn;
             var hasHit = HasHit(pawns, isWhiteTurn);
-            foreach (var move in _selected.moves)
+            foreach (var move in _selected.Moves)
             {
                 if (!hasHit || move.isAttack)
                 {
@@ -80,7 +80,7 @@ namespace Code.AI
 
         private Move ValidMove(int x1, int y1, int x2, int y2, List<Pawn> pawns, bool isWhiteTurn)
         {
-            foreach (var move in _selected.moves)
+            foreach (var move in _selected.Moves)
             {
                 if (move.Equals(x1, y1, x2, y2))
                 {
@@ -103,7 +103,7 @@ namespace Code.AI
             {
                 if (pawn != null && isWhiteTurn == pawn.IsWhite)
                 {
-                    if (pawn.moves.Any(p => p.isAttack))
+                    if (pawn.Moves.Any(p => p.isAttack))
                     {
                         Debug.Log("You have hit!");
                         return true;

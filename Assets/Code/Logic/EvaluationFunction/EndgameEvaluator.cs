@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Code.EvaluationFunction
+namespace Code.Logic.EvaluationFunction
 {
     public class EndgameEvaluator : EvaluatorBase
     {
@@ -17,13 +17,13 @@ namespace Code.EvaluationFunction
                 {
                     if (myPawns.Count >= enemyPawns.Count)
                     {
-                        value -= (int) Mathf.Abs(myPawn.position.x - enemyPawn.position.x);
-                        value -= (int) Mathf.Abs(myPawn.position.y - enemyPawn.position.y);
+                        value -= (int) Mathf.Abs(myPawn.Position.x - enemyPawn.Position.x);
+                        value -= (int) Mathf.Abs(myPawn.Position.y - enemyPawn.Position.y);
                     }
                     else
                     {
-                        value += (int) Mathf.Abs(myPawn.position.x - enemyPawn.position.x);
-                        value += (int) Mathf.Abs(myPawn.position.y - enemyPawn.position.y);
+                        value += (int) Mathf.Abs(myPawn.Position.x - enemyPawn.Position.x);
+                        value += (int) Mathf.Abs(myPawn.Position.y - enemyPawn.Position.y);
                     }
                 }
             }

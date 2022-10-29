@@ -2,7 +2,7 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.AI
+namespace Code.Logic.AI
 {
     public class RandomSearchPlayer : PlayerBase
     {

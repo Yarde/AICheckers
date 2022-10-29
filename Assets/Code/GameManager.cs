@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Code.Logic;
+using Code.Utils;
 using Code.View;
 using UnityEngine;
 
@@ -58,14 +60,6 @@ namespace Code
             _turnInProgress = false;
         }
 
-        private void GenerateMoves()
-        {
-            foreach (var pawn in _pawns)
-            {
-                pawn.moves = pawn.PossibleMoves(_pawns);
-            }
-        }
-
         private void GenerateBoard()
         {
             for (int y = 0; y < boardSize; y++)
@@ -84,19 +78,13 @@ namespace Code
                         var pawnPrefab = y > boardSize / 2 ? blackPawn : whitePawn;
                         var pawnGO = Instantiate(pawnPrefab, new Vector3(x, y, 0), Quaternion.identity,
                             pawnsObject.transform);
-                        var pawn = new Pawn
-                        {
-                            boardSize = boardSize,
-                            position = new Vector2(x, y),
-                            IsWhite = y <= boardSize / 2,
-                            view = pawnGO
-                        };
+                        var pawn = new Pawn(boardSize, new Vector2(x, y), y <= boardSize / 2, pawnGO);
                         _pawns.Add(pawn);
                     }
                 }
             }
 
-            GenerateMoves();
+            _pawns.GenerateMoves();
         }
 
         public void AnimateMoves(Move move)

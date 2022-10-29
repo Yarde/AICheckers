@@ -2,100 +2,113 @@
 using System.Linq;
 using Code.View;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Code
+namespace Code.Logic
 {
     public class Pawn
     {
-        public PawnView view;
-        public int boardSize;
-        public Vector2 position;
-        public List<Move> moves = new List<Move>();
-        public bool IsWhite { get; set; }
-        private bool isQueen = false;
+        private readonly PawnView _view;
+        private readonly int _boardSize;
+        public Vector2 Position { get; private set; }
+        public List<Move> Moves { get; } = new();
+        public bool IsWhite { get; }
+        private bool _isQueen;
         public bool IsQueen
         {
-            get => isQueen;
-            set
+            get => _isQueen;
+            private set
             {
-                isQueen = value;
-                if (view)
+                _isQueen = value;
+                if (_view)
                 {
-                    view.queenImage.gameObject.SetActive(isQueen); 
+                    _view.queenImage.gameObject.SetActive(_isQueen); 
                 }
             }
         }
         
-        public bool IsSafe => position.x == 0 || (int) position.x == boardSize - 1;
-        public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? boardSize - 1 - (int) position.y : (int) position.y;
+        public bool IsSafe => Position.x == 0 || (int) Position.x == _boardSize - 1;
+        public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? _boardSize - 1 - (int) Position.y : (int) Position.y;
 
-        public List<Move> PossibleMoves(List<Pawn> pawns)
+        public Pawn(int boardSize, Vector2 vector2, bool b, PawnView pawnGo)
         {
-            moves = new List<Move>();
+            _boardSize = boardSize;
+            Position = vector2;
+            IsWhite = b;
+            _view = pawnGo;
+        }
 
-            if (IsWhite || isQueen)
+        public Pawn(bool pawnIsWhite, bool pawnIsQueen, Vector2 pawnPosition, int pawnBoardSize)
+        {
+            IsWhite = pawnIsWhite;
+            IsQueen = pawnIsQueen;
+            Position = pawnPosition;
+            _boardSize = pawnBoardSize;
+        }
+
+        public void GeneratePossibleMoves(List<Pawn> pawns)
+        {
+            Moves.Clear();
+
+            if (IsWhite || _isQueen)
             {
                 FindInDirection(pawns, new Vector2(1, 1));
                 FindInDirection(pawns, new Vector2(-1, 1));
             }
             
-            if (!IsWhite || isQueen)
+            if (!IsWhite || _isQueen)
             {
                 FindInDirection(pawns, new Vector2(1, -1));
                 FindInDirection(pawns, new Vector2(-1, -1));
             }
             
             ValidMovesOnly();
-
-            return moves;
         }
         
         private void ValidMovesOnly()
         {
-            var hasHit = moves.Any(x => x.isAttack);
+            var hasHit = Moves.Any(x => x.isAttack);
 
             if (hasHit)
             {
-                moves.RemoveAll(x => !x.isAttack);
+                Moves.RemoveAll(x => !x.isAttack);
             }
         }
 
         private void FindInDirection(List<Pawn> pawns, Vector2 direction)
         {
-            if (position.x + direction.x > boardSize - 1 || position.x + direction.x < 0 ||
-                position.y + direction.y > boardSize - 1 || position.y + direction.y < 0)
+            if (Position.x + direction.x > _boardSize - 1 || Position.x + direction.x < 0 ||
+                Position.y + direction.y > _boardSize - 1 || Position.y + direction.y < 0)
             {
                 return;
             }
-            var pawn = pawns.FirstOrDefault(p => (int) p.position.x == (int) (position.x + direction.x) && (int) p.position.y == (int)  (position.y + direction.y));
+            var pawn = pawns.FirstOrDefault(p => (int) p.Position.x == (int) (Position.x + direction.x) && (int) p.Position.y == (int)  (Position.y + direction.y));
             if (pawn == null)
             {
-                moves.Add(new Move(this, position, new Vector2(position.x + direction.x, position.y + direction.y)));
+                Moves.Add(new Move(this, Position, new Vector2(Position.x + direction.x, Position.y + direction.y)));
             }
             else
             {
-                FindAllAttacks(pawns, direction, position);
+                FindAllAttacks(pawns, direction, Position);
             }
         }
 
         private void FindAllAttacks(List<Pawn> pawns, Vector2 direction, Vector2 from, Move previousMove = null)
         {
-            if ((int) from.x + (int) direction.x < 1 || (int) from.x + (int) direction.x > boardSize - 2 ||
-                (int) from.y + (int) direction.y < 1 || (int) from.y + (int) direction.y > boardSize - 2)
+            if ((int) from.x + (int) direction.x < 1 || (int) from.x + (int) direction.x > _boardSize - 2 ||
+                (int) from.y + (int) direction.y < 1 || (int) from.y + (int) direction.y > _boardSize - 2)
             {
                 return;
             }
-            var pawn = pawns.FirstOrDefault(p => (int) p.position.x == (int) (from.x + direction.x) && (int) p.position.y == (int)  (from.y + direction.y));
-            var target = pawns.FirstOrDefault(p => (int) p.position.x == (int) (from.x + direction.x*2) && (int) p.position.y == (int)  (from.y + direction.y*2));
+            var pawn = pawns.FirstOrDefault(p => (int) p.Position.x == (int) (from.x + direction.x) && (int) p.Position.y == (int)  (from.y + direction.y));
+            var target = pawns.FirstOrDefault(p => (int) p.Position.x == (int) (from.x + direction.x*2) && (int) p.Position.y == (int)  (from.y + direction.y*2));
             if (pawn != null && pawn.IsWhite != IsWhite && target == null)
             {
                 var to = new Vector2(from.x + direction.x * 2, from.y + direction.y * 2);
                 Move move;
                 if (previousMove == null)
                 {
-                    move = new Move(this, position, to);
-                    moves.Add(move);
+                    move = new Move(this, Position, to);
+                    Moves.Add(move);
                     move.hits.Add(pawn);
                 }
                 else
@@ -109,6 +122,30 @@ namespace Code
                 
                 var newDirection = new Vector2(direction.x * -1, direction.y);
                 FindAllAttacks(pawns, newDirection, to, move);
+            }
+        }
+
+        public void Move(Move move)
+        {
+            if (_view)
+            {
+                _view.transform.position = new Vector3(move.endPos.x, move.endPos.y, 0);
+            }
+
+            Position = new Vector2(move.endPos.x, move.endPos.y);
+
+            if (IsWhite && (int)move.endPos.y == _boardSize - 1 ||
+                !IsWhite && (int)move.endPos.y == 0)
+            {
+                IsQueen = true;
+            }
+        }
+
+        public void Destroy()
+        {
+            if (_view)
+            {
+                Object.Destroy(_view.gameObject);
             }
         }
     }

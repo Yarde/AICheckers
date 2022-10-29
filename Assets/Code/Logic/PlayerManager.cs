@@ -1,27 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Code.AI;
+using Code.Logic.AI;
+using Code.Utils;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-namespace Code
+namespace Code.Logic
 {
     public class PlayerManager
     {
-        private PlayerBase _playerWhite;
-        private PlayerBase _playerBlack;
-        private PlayerBase _playerRandom;
-        private PlayerData _whitePlayerData;
-        private PlayerData _blackPlayerData;
+        private readonly PlayerBase _playerWhite;
+        private readonly PlayerBase _playerBlack;
+        private readonly PlayerBase _playerRandom;
+        private readonly PlayerData _whitePlayerData;
+        private readonly PlayerData _blackPlayerData;
+        
+        private readonly int _boardSize;
+        private readonly float _gameStart;
 
         private int _lastAttackTurn;
         private int _turnCounter;
-        private int _boardSize;
-        private float _gameStart;
+
         private bool _isWhiteTurn;
         private bool _gameOver;
         private Pawn _selected;
@@ -89,34 +92,14 @@ namespace Code
                 _turnCounter++;
                 _isWhiteTurn = !_isWhiteTurn;
                 _selected = move.pawn;
-                MovePawn(move);
+                _selected.Move(move);
                 AttackPawn(move, pawns);
-                GenerateMoves(pawns);
+                pawns.GenerateMoves();
                 _selected = null;
                 return CheckWin(pawns);
             }
 
             return GameResult.Pat;
-        }
-
-        private void GenerateMoves(List<Pawn> pawns)
-        {
-            foreach (var pawn in pawns)
-            {
-                pawn.moves = pawn.PossibleMoves(pawns);
-            }
-        }
-
-        private void MovePawn(Move move)
-        {
-            _selected.view.transform.position = new Vector3(move.endPos.x, move.endPos.y, 0);
-            _selected.position = new Vector2(move.endPos.x, move.endPos.y);
-
-            if (_selected.IsWhite && (int)move.endPos.y == _boardSize - 1 ||
-                !_selected.IsWhite && (int)move.endPos.y == 0)
-            {
-                _selected.IsQueen = true;
-            }
         }
 
         private void AttackPawn(Move move, List<Pawn> pawns)
@@ -125,7 +108,7 @@ namespace Code
             {
                 _lastAttackTurn = _turnCounter;
                 pawns.Remove(hit);
-                Object.Destroy(hit.view.gameObject);
+                hit.Destroy();
             }
         }
 

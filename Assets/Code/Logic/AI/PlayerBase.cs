@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Code.EvaluationFunction;
+using Code.Logic.EvaluationFunction;
 using Code.Utils;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Code.AI
+namespace Code.Logic.AI
 {
     public abstract class PlayerBase
     {
@@ -66,7 +66,7 @@ namespace Code.AI
             {
                 if (isWhiteTurn == pawn.IsWhite)
                 {
-                    foreach (var move in pawn.moves)
+                    foreach (var move in pawn.Moves)
                     {
                         var isValid = IsMoveValid(move, state, isWhiteTurn);
                         if (isValid)
@@ -90,31 +90,16 @@ namespace Code.AI
                     continue;
                 }
 
-                var newPawn = new Pawn
-                {
-                    IsWhite = pawn.IsWhite,
-                    IsQueen = pawn.IsQueen,
-                    position = pawn.position,
-                    boardSize = _boardSize
-                };
+                var newPawn = new Pawn(pawn.IsWhite, pawn.IsQueen, pawn.Position, _boardSize);
                 if (pawn == move.pawn)
                 {
-                    newPawn.position = new Vector2(move.endPos.x, move.endPos.y);
-
-                    if (newPawn.IsWhite && (int)move.endPos.y == _boardSize - 1 ||
-                        !newPawn.IsWhite && (int)move.endPos.y == 0)
-                    {
-                        newPawn.IsQueen = true;
-                    }
+                    newPawn.Move(move);
                 }
 
                 newState.Add(newPawn);
             }
 
-            foreach (var pawn in newState)
-            {
-                pawn.moves = pawn.PossibleMoves(newState);
-            }
+            newState.GenerateMoves();
 
             return newState;
         }
@@ -131,7 +116,7 @@ namespace Code.AI
 
         private bool HasHit(IEnumerable<Pawn> state, bool isWhiteTurn)
         {
-            return state.Any(pawn => pawn.moves.Any(p => p.isAttack && pawn.IsMine(isWhiteTurn)));
+            return state.Any(pawn => pawn.Moves.Any(p => p.isAttack && pawn.IsMine(isWhiteTurn)));
         }
     }
 }

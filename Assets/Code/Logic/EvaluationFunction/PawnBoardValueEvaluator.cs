@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Code.EvaluationFunction
+namespace Code.Logic.EvaluationFunction
 {
     public class PawnBoardValueEvaluator : EvaluatorBase
     {
@@ -15,8 +15,8 @@ namespace Code.EvaluationFunction
         {
             foreach (var pawn in state)
             {
-                var v = (pawn.IsWhite && pawn.position.y >= _boardSize / 2.0f) ||
-                        (!pawn.IsWhite && pawn.position.y < _boardSize / 2.0f)
+                var v = (pawn.IsWhite && pawn.Position.y >= _boardSize / 2.0f) ||
+                        (!pawn.IsWhite && pawn.Position.y < _boardSize / 2.0f)
                     ? 7
                     : 5;
                 if (isWhitePlayer == pawn.IsWhite || !isWhitePlayer == !pawn.IsWhite)

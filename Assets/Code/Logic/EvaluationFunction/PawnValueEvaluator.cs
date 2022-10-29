@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Code.EvaluationFunction
+namespace Code.Logic.EvaluationFunction
 {
     public class PawnValueEvaluator : EvaluatorBase
     {

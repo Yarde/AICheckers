@@ -1,4 +1,4 @@
-namespace Code.EvaluationFunction
+namespace Code.Logic.EvaluationFunction
 {
     public enum EvaluationFunctionType
     {

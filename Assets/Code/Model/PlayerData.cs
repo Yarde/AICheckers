@@ -1,8 +1,8 @@
 using System;
-using Code.AI;
-using Code.EvaluationFunction;
+using Code.Logic.AI;
+using Code.Logic.EvaluationFunction;
 
-namespace Code
+namespace Code.Logic
 {
     [Serializable]
     public struct PlayerData

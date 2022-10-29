@@ -1,4 +1,4 @@
-namespace Code.AI
+namespace Code.Logic.AI
 {
     public enum AlgorithmType
     {
