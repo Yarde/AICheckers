@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4106227229970790179}
   - component: {fileID: 5322619190374233256}
-  - component: {fileID: 2774077236280556246}
   - component: {fileID: 6062177095056143405}
   m_Layer: 0
   m_Name: BlackSquare
@@ -86,22 +85,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!111 &2774077236280556246
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212884717880796873}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: b62e188721d893c43a0e6d5973c305b3, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: b62e188721d893c43a0e6d5973c305b3, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 0
-  m_AnimatePhysics: 0
-  m_CullingType: 0
 --- !u!114 &6062177095056143405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,3 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f3c004586944f82ad0ebb30f3d629c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveColor: {r: 0.19421315, g: 1, b: 0, a: 1}
+  attackColor: {r: 1, g: 0, b: 0, a: 1}
+  spriteRenderer: {fileID: 5322619190374233256}

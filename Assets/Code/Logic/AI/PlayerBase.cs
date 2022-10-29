@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Code.Logic.EvaluationFunction;
 using Code.Utils;
@@ -23,7 +24,8 @@ namespace Code.Logic.AI
             {
                 EvaluationFunctionType.PawnValue => new PawnValueEvaluator(),
                 EvaluationFunctionType.PawnBoardValue => new PawnBoardValueEvaluator(_boardSize),
-                EvaluationFunctionType.Complex => new ComplexEvaluator()
+                EvaluationFunctionType.Complex => new ComplexEvaluator(),
+                _ => throw new ArgumentOutOfRangeException()
             };
         }
 

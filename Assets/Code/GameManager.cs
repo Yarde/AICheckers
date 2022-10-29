@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Code.Logic;
 using Code.Utils;
 using Code.View;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Code
@@ -87,10 +88,10 @@ namespace Code
             _pawns.GenerateMoves();
         }
 
-        public void AnimateMoves(Move move)
+        public void AnimateMoves(Move move, bool isAttack)
         {
-            var field = _board[(int)move.endPos.y, (int)move.endPos.x];
-            field.Highlight();
+            var field = _board[move.endPos.y, move.endPos.x];
+            field.Highlight(isAttack).Forget();
         }
     }
 }

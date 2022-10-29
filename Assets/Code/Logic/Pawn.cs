@@ -27,8 +27,8 @@ namespace Code.Logic
             }
         }
 
-        public bool IsSafe => Position.x == 0 || (int)Position.x == _boardSize - 1;
-        public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? _boardSize - 1 - (int)Position.y : (int)Position.y;
+        public bool IsSafe => Position.x == 0 || Position.x == _boardSize - 1;
+        public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? _boardSize - 1 - Position.y : Position.y;
 
         public Pawn(int boardSize, Vector2Int vector2, bool b, PawnView pawnGo)
         {
@@ -75,7 +75,7 @@ namespace Code.Logic
             }
         }
 
-        private void FindInDirection(List<Pawn> pawns, Vector2Int direction)
+        private void FindInDirection(IReadOnlyCollection<Pawn> pawns, Vector2Int direction)
         {
             if (Position.x + direction.x > _boardSize - 1 || Position.x + direction.x < 0 ||
                 Position.y + direction.y > _boardSize - 1 || Position.y + direction.y < 0)
@@ -84,8 +84,8 @@ namespace Code.Logic
             }
 
             var pawn = pawns.FirstOrDefault(p =>
-                (int)p.Position.x == (int)(Position.x + direction.x) &&
-                (int)p.Position.y == (int)(Position.y + direction.y));
+                p.Position.x == Position.x + direction.x &&
+                p.Position.y == Position.y + direction.y);
             if (pawn == null)
             {
                 Moves.Add(new Move(this, Position, new Vector2Int(Position.x + direction.x, Position.y + direction.y)));
@@ -96,41 +96,56 @@ namespace Code.Logic
             }
         }
 
-        private void FindAllAttacks(List<Pawn> pawns, Vector2Int direction, Vector2Int from, Move previousMove = null)
+        private void FindAllAttacks(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from,
+            Move previousMove = null)
         {
-            if (from.x + direction.x < 1 || from.x + direction.x > _boardSize - 2 ||
-                from.y + direction.y < 1 || from.y + direction.y > _boardSize - 2)
-            {
-                return;
-            }
+            var to = new Vector2Int(from.x + direction.x * 2, from.y + direction.y * 2);
+            if (IsOutsideBoard(to)) return;
+            if (TargetCellNotEmpty(pawns, to)) return;
 
             var pawn = pawns.FirstOrDefault(p =>
-                (int)p.Position.x == from.x + direction.x && (int)p.Position.y == from.y + direction.y);
-            var target = pawns.FirstOrDefault(p =>
-                (int)p.Position.x == from.x + direction.x * 2 &&
-                (int)p.Position.y == from.y + direction.y * 2);
-            if (pawn != null && pawn.IsWhite != IsWhite && target == null)
+                p.Position.x == from.x + direction.x && p.Position.y == from.y + direction.y);
+            if (pawn == null || pawn.IsWhite == IsWhite) return;
+
+            var move = GetMove(previousMove, to, pawn);
+
+            // get multiple attacks 
+            FindAllAttacks(pawns, direction, to, move);
+            var newDirection = new Vector2Int(direction.x * -1, direction.y);
+            FindAllAttacks(pawns, newDirection, to, move);
+        }
+
+        private Move GetMove(Move previousMove, Vector2Int to, Pawn pawn)
+        {
+            Move move;
+            if (previousMove == null)
             {
-                var to = new Vector2Int(from.x + direction.x * 2, from.y + direction.y * 2);
-                Move move;
-                if (previousMove == null)
-                {
-                    move = new Move(this, Position, to);
-                    Moves.Add(move);
-                    move.hits.Add(pawn);
-                }
-                else
-                {
-                    previousMove.hits.Add(pawn);
-                    previousMove.endPos = to;
-                    move = previousMove;
-                }
-
-                FindAllAttacks(pawns, direction, to, move);
-
-                var newDirection = new Vector2Int(direction.x * -1, direction.y);
-                FindAllAttacks(pawns, newDirection, to, move);
+                move = new Move(this, Position, to);
+                Moves.Add(move);
+                move.hits.Add(pawn);
             }
+            else
+            {
+                previousMove.hits.Add(pawn);
+                previousMove.endPos = to;
+                move = previousMove;
+            }
+
+            return move;
+        }
+
+        private bool IsOutsideBoard(Vector2Int to)
+        {
+            return to.x < 0 || to.x > _boardSize - 1 ||
+                   to.y < 0 || to.y > _boardSize - 1;
+        }
+
+        private static bool TargetCellNotEmpty(IReadOnlyCollection<Pawn> pawns, Vector2Int to)
+        {
+            var target = pawns.FirstOrDefault(p =>
+                p.Position.x == to.x &&
+                p.Position.y == to.y);
+            return target != null;
         }
 
         public void Move(Move move)
@@ -142,8 +157,8 @@ namespace Code.Logic
 
             Position = new Vector2Int(move.endPos.x, move.endPos.y);
 
-            if (IsWhite && (int)move.endPos.y == _boardSize - 1 ||
-                !IsWhite && (int)move.endPos.y == 0)
+            if (IsWhite && move.endPos.y == _boardSize - 1 ||
+                !IsWhite && move.endPos.y == 0)
             {
                 IsQueen = true;
             }

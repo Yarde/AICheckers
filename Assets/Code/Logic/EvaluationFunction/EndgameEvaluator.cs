@@ -17,13 +17,13 @@ namespace Code.Logic.EvaluationFunction
                 {
                     if (myPawns.Count >= enemyPawns.Count)
                     {
-                        value -= (int) Mathf.Abs(myPawn.Position.x - enemyPawn.Position.x);
-                        value -= (int) Mathf.Abs(myPawn.Position.y - enemyPawn.Position.y);
+                        value -= Mathf.Abs(myPawn.Position.x - enemyPawn.Position.x);
+                        value -= Mathf.Abs(myPawn.Position.y - enemyPawn.Position.y);
                     }
                     else
                     {
-                        value += (int) Mathf.Abs(myPawn.Position.x - enemyPawn.Position.x);
-                        value += (int) Mathf.Abs(myPawn.Position.y - enemyPawn.Position.y);
+                        value += Mathf.Abs(myPawn.Position.x - enemyPawn.Position.x);
+                        value += Mathf.Abs(myPawn.Position.y - enemyPawn.Position.y);
                     }
                 }
             }

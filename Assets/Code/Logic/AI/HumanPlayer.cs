@@ -48,7 +48,7 @@ namespace Code.Logic.AI
             }
             else if (Input.GetMouseButtonUp(0) && x > -1 && y > -1 && _selected != null)
             {
-                var move = ValidMove((int)_selected.Position.x, (int)_selected.Position.y, x, y, pawns, isWhiteTurn);
+                var move = ValidMove(_selected.Position.x, _selected.Position.y, x, y, pawns, isWhiteTurn);
                 _selected = null;
                 if (move != null)
                 {
@@ -63,7 +63,7 @@ namespace Code.Logic.AI
 
         private void SelectPawn(int x, int y, List<Pawn> pawns, bool isWhiteTurn)
         {
-            var pawn = pawns.FirstOrDefault(p => (int)p.Position.x == x && (int)p.Position.y == y);
+            var pawn = pawns.FirstOrDefault(p => p.Position.x == x && p.Position.y == y);
             if (pawn == null) return;
             if (pawn.IsWhite != isWhiteTurn) return;
 
@@ -73,7 +73,7 @@ namespace Code.Logic.AI
             {
                 if (!hasHit || move.isAttack)
                 {
-                    _gameManager.AnimateMoves(move);
+                    _gameManager.AnimateMoves(move, move.isAttack);
                 }
             }
         }
@@ -103,7 +103,13 @@ namespace Code.Logic.AI
             {
                 if (pawn != null && isWhiteTurn == pawn.IsWhite)
                 {
-                    if (pawn.Moves.Any(p => p.isAttack))
+                    var attacks = pawn.Moves.Where(p => p.isAttack).ToList();
+                    foreach (var attack in attacks)
+                    {
+                        _gameManager.AnimateMoves(attack, true);
+                    }
+
+                    if (attacks.Count > 0)
                     {
                         Debug.Log("You have hit!");
                         return true;
