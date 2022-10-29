@@ -92,46 +92,48 @@ namespace Code.Logic
             }
             else
             {
-                FindAllAttacks(pawns, direction, Position);
+                FindAttacks(pawns, direction, Position);
             }
         }
 
-        private void FindAllAttacks(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from,
-            Move previousMove = null)
+        private void FindAttacks(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from)
         {
-            var to = new Vector2Int(from.x + direction.x * 2, from.y + direction.y * 2);
-            if (IsOutsideBoard(to)) return;
-            if (TargetCellNotEmpty(pawns, to)) return;
+            if (CheckAttack(pawns, direction, from, out var to, out var pawn)) return;
 
-            var pawn = pawns.FirstOrDefault(p =>
+            var move = new Move(this, Position, to);
+            Moves.Add(move);
+            move.hits.Add(pawn);
+
+            FindConsecutiveAttacks(pawns, new Vector2Int(direction.x, direction.y), to, move);
+            FindConsecutiveAttacks(pawns, new Vector2Int(direction.x, direction.y * -1), to, move);
+        }
+
+        private bool CheckAttack(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from,
+            out Vector2Int to,
+            out Pawn pawn)
+        {
+            pawn = null;
+            to = new Vector2Int(from.x + direction.x * 2, from.y + direction.y * 2);
+            if (IsOutsideBoard(to)) return true;
+            if (TargetCellNotEmpty(pawns, to)) return true;
+
+            pawn = pawns.FirstOrDefault(p =>
                 p.Position.x == from.x + direction.x && p.Position.y == from.y + direction.y);
-            if (pawn == null || pawn.IsWhite == IsWhite) return;
+            if (pawn == null || pawn.IsWhite == IsWhite) return true;
+            return false;
+        }
 
-            var move = GetMove(previousMove, to, pawn);
+        private void FindConsecutiveAttacks(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from,
+            Move previousMove)
+        {
+            if (CheckAttack(pawns, direction, from, out var to, out var pawn)) return;
+
+            previousMove.hits.Add(pawn);
+            previousMove.endPos = to;
 
             // get multiple attacks 
-            FindAllAttacks(pawns, direction, to, move);
-            var newDirection = new Vector2Int(direction.x * -1, direction.y);
-            FindAllAttacks(pawns, newDirection, to, move);
-        }
-
-        private Move GetMove(Move previousMove, Vector2Int to, Pawn pawn)
-        {
-            Move move;
-            if (previousMove == null)
-            {
-                move = new Move(this, Position, to);
-                Moves.Add(move);
-                move.hits.Add(pawn);
-            }
-            else
-            {
-                previousMove.hits.Add(pawn);
-                previousMove.endPos = to;
-                move = previousMove;
-            }
-
-            return move;
+            FindConsecutiveAttacks(pawns, new Vector2Int(direction.x, direction.y), to, previousMove);
+            FindConsecutiveAttacks(pawns, new Vector2Int(direction.x, direction.y * -1), to, previousMove);
         }
 
         private bool IsOutsideBoard(Vector2Int to)

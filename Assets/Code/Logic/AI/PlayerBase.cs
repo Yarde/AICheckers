@@ -11,18 +11,16 @@ namespace Code.Logic.AI
     {
         protected bool _isWhiteTurn;
         protected bool _isWhitePlayer;
-        private readonly int _boardSize;
         private readonly bool _endgame;
         private EvaluatorBase _evaluator;
 
         protected PlayerBase(int boardSize, PlayerData data)
         {
-            _boardSize = boardSize;
             _endgame = data.useEndgameHeuristic;
             _evaluator = data.functionType switch
             {
                 EvaluationFunctionType.PawnValue => new PawnValueEvaluator(),
-                EvaluationFunctionType.PawnBoardValue => new PawnBoardValueEvaluator(_boardSize),
+                EvaluationFunctionType.PawnBoardValue => new PawnBoardValueEvaluator(boardSize),
                 EvaluationFunctionType.Complex => new ComplexEvaluator(),
                 _ => throw new ArgumentOutOfRangeException()
             };
@@ -115,7 +113,7 @@ namespace Code.Logic.AI
             return !HasHit(state, isWhiteTurn);
         }
 
-        private bool HasHit(IEnumerable<Pawn> state, bool isWhiteTurn)
+        private static bool HasHit(IEnumerable<Pawn> state, bool isWhiteTurn)
         {
             return state.Any(pawn => pawn.Moves.Any(p => p.isAttack && pawn.IsMine(isWhiteTurn)));
         }
