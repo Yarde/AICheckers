@@ -30,15 +30,15 @@ namespace Code.Logic
         public bool IsSafe => Position.y == 0 || Position.y == _boardSize - 1;
         public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? _boardSize - 1 - Position.x : Position.x;
 
-        public Pawn(int boardSize, Vector2Int vector2, bool b, PawnView pawnGo)
+        public Pawn(int boardSize, Vector2Int position, bool isWhite, PawnView pawnView)
         {
             _boardSize = boardSize;
-            Position = vector2;
-            IsWhite = b;
-            _view = pawnGo;
+            Position = position;
+            IsWhite = isWhite;
+            _view = pawnView;
         }
 
-        public Pawn(bool pawnIsWhite, bool pawnIsQueen, Vector2Int pawnPosition, int pawnBoardSize)
+        private Pawn(bool pawnIsWhite, bool pawnIsQueen, Vector2Int pawnPosition, int pawnBoardSize)
         {
             IsWhite = pawnIsWhite;
             IsQueen = pawnIsQueen;
@@ -170,6 +170,11 @@ namespace Code.Logic
             {
                 Object.Destroy(_view.gameObject);
             }
+        }
+
+        public Pawn Copy()
+        {
+            return new Pawn(IsWhite, _isQueen, Position, _boardSize);
         }
     }
 }

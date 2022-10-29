@@ -33,8 +33,8 @@ namespace Code.Logic.AI
         protected static bool IsGameFinished(List<Pawn> state)
         {
             var isWin = state.All(p => p.IsWhite) || state.All(p => !p.IsWhite);
-            var isPat = state.All(p => p.IsWhite && p.Moves.Count == 0)  
-                         || state.All(p => !p.IsWhite && p.Moves.Count == 0);
+            var isPat = state.All(p => p.IsWhite && p.Moves.Count == 0)
+                        || state.All(p => !p.IsWhite && p.Moves.Count == 0);
             return isWin || isPat;
         }
 
@@ -51,7 +51,7 @@ namespace Code.Logic.AI
             {
                 value = -1000;
             }
-            
+
             if (_endgame && state.Where(p => p.IsWhite == _isWhitePlayer).All(p => p.IsQueen))
             {
                 _evaluator = new EndgameEvaluator();
@@ -67,7 +67,7 @@ namespace Code.Logic.AI
             foreach (var pawn in state)
             {
                 if (isWhiteTurn != pawn.IsWhite) continue;
-                
+
                 foreach (var move in pawn.Moves)
                 {
                     var isValid = IsMoveValid(move, state, isWhiteTurn);
@@ -91,7 +91,7 @@ namespace Code.Logic.AI
                     continue;
                 }
 
-                var newPawn = new Pawn(pawn.IsWhite, pawn.IsQueen, pawn.Position, _boardSize);
+                var newPawn = pawn.Copy();
                 if (pawn == move.pawn)
                 {
                     newPawn.Move(move);
@@ -105,7 +105,7 @@ namespace Code.Logic.AI
             return newState;
         }
 
-        private bool IsMoveValid(Move move, List<Pawn> state, bool isWhiteTurn)
+        private bool IsMoveValid(Move move, IEnumerable<Pawn> state, bool isWhiteTurn)
         {
             if (move.isAttack)
             {
