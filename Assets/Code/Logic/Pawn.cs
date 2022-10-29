@@ -9,10 +9,11 @@ namespace Code.Logic
     {
         private readonly PawnView _view;
         private readonly int _boardSize;
-        public Vector2 Position { get; private set; }
+        public Vector2Int Position { get; private set; }
         public List<Move> Moves { get; } = new();
         public bool IsWhite { get; }
         private bool _isQueen;
+
         public bool IsQueen
         {
             get => _isQueen;
@@ -21,15 +22,15 @@ namespace Code.Logic
                 _isQueen = value;
                 if (_view)
                 {
-                    _view.queenImage.gameObject.SetActive(_isQueen); 
+                    _view.queenImage.gameObject.SetActive(_isQueen);
                 }
             }
         }
-        
-        public bool IsSafe => Position.x == 0 || (int) Position.x == _boardSize - 1;
-        public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? _boardSize - 1 - (int) Position.y : (int) Position.y;
 
-        public Pawn(int boardSize, Vector2 vector2, bool b, PawnView pawnGo)
+        public bool IsSafe => Position.x == 0 || (int)Position.x == _boardSize - 1;
+        public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? _boardSize - 1 - (int)Position.y : (int)Position.y;
+
+        public Pawn(int boardSize, Vector2Int vector2, bool b, PawnView pawnGo)
         {
             _boardSize = boardSize;
             Position = vector2;
@@ -37,7 +38,7 @@ namespace Code.Logic
             _view = pawnGo;
         }
 
-        public Pawn(bool pawnIsWhite, bool pawnIsQueen, Vector2 pawnPosition, int pawnBoardSize)
+        public Pawn(bool pawnIsWhite, bool pawnIsQueen, Vector2Int pawnPosition, int pawnBoardSize)
         {
             IsWhite = pawnIsWhite;
             IsQueen = pawnIsQueen;
@@ -51,19 +52,19 @@ namespace Code.Logic
 
             if (IsWhite || _isQueen)
             {
-                FindInDirection(pawns, new Vector2(1, 1));
-                FindInDirection(pawns, new Vector2(-1, 1));
+                FindInDirection(pawns, new Vector2Int(1, 1));
+                FindInDirection(pawns, new Vector2Int(-1, 1));
             }
-            
+
             if (!IsWhite || _isQueen)
             {
-                FindInDirection(pawns, new Vector2(1, -1));
-                FindInDirection(pawns, new Vector2(-1, -1));
+                FindInDirection(pawns, new Vector2Int(1, -1));
+                FindInDirection(pawns, new Vector2Int(-1, -1));
             }
-            
+
             ValidMovesOnly();
         }
-        
+
         private void ValidMovesOnly()
         {
             var hasHit = Moves.Any(x => x.isAttack);
@@ -74,17 +75,20 @@ namespace Code.Logic
             }
         }
 
-        private void FindInDirection(List<Pawn> pawns, Vector2 direction)
+        private void FindInDirection(List<Pawn> pawns, Vector2Int direction)
         {
             if (Position.x + direction.x > _boardSize - 1 || Position.x + direction.x < 0 ||
                 Position.y + direction.y > _boardSize - 1 || Position.y + direction.y < 0)
             {
                 return;
             }
-            var pawn = pawns.FirstOrDefault(p => (int) p.Position.x == (int) (Position.x + direction.x) && (int) p.Position.y == (int)  (Position.y + direction.y));
+
+            var pawn = pawns.FirstOrDefault(p =>
+                (int)p.Position.x == (int)(Position.x + direction.x) &&
+                (int)p.Position.y == (int)(Position.y + direction.y));
             if (pawn == null)
             {
-                Moves.Add(new Move(this, Position, new Vector2(Position.x + direction.x, Position.y + direction.y)));
+                Moves.Add(new Move(this, Position, new Vector2Int(Position.x + direction.x, Position.y + direction.y)));
             }
             else
             {
@@ -92,18 +96,22 @@ namespace Code.Logic
             }
         }
 
-        private void FindAllAttacks(List<Pawn> pawns, Vector2 direction, Vector2 from, Move previousMove = null)
+        private void FindAllAttacks(List<Pawn> pawns, Vector2Int direction, Vector2Int from, Move previousMove = null)
         {
-            if ((int) from.x + (int) direction.x < 1 || (int) from.x + (int) direction.x > _boardSize - 2 ||
-                (int) from.y + (int) direction.y < 1 || (int) from.y + (int) direction.y > _boardSize - 2)
+            if (from.x + direction.x < 1 || from.x + direction.x > _boardSize - 2 ||
+                from.y + direction.y < 1 || from.y + direction.y > _boardSize - 2)
             {
                 return;
             }
-            var pawn = pawns.FirstOrDefault(p => (int) p.Position.x == (int) (from.x + direction.x) && (int) p.Position.y == (int)  (from.y + direction.y));
-            var target = pawns.FirstOrDefault(p => (int) p.Position.x == (int) (from.x + direction.x*2) && (int) p.Position.y == (int)  (from.y + direction.y*2));
+
+            var pawn = pawns.FirstOrDefault(p =>
+                (int)p.Position.x == from.x + direction.x && (int)p.Position.y == from.y + direction.y);
+            var target = pawns.FirstOrDefault(p =>
+                (int)p.Position.x == from.x + direction.x * 2 &&
+                (int)p.Position.y == from.y + direction.y * 2);
             if (pawn != null && pawn.IsWhite != IsWhite && target == null)
             {
-                var to = new Vector2(from.x + direction.x * 2, from.y + direction.y * 2);
+                var to = new Vector2Int(from.x + direction.x * 2, from.y + direction.y * 2);
                 Move move;
                 if (previousMove == null)
                 {
@@ -119,8 +127,8 @@ namespace Code.Logic
                 }
 
                 FindAllAttacks(pawns, direction, to, move);
-                
-                var newDirection = new Vector2(direction.x * -1, direction.y);
+
+                var newDirection = new Vector2Int(direction.x * -1, direction.y);
                 FindAllAttacks(pawns, newDirection, to, move);
             }
         }
@@ -132,7 +140,7 @@ namespace Code.Logic
                 _view.transform.position = new Vector3(move.endPos.x, move.endPos.y, 0);
             }
 
-            Position = new Vector2(move.endPos.x, move.endPos.y);
+            Position = new Vector2Int(move.endPos.x, move.endPos.y);
 
             if (IsWhite && (int)move.endPos.y == _boardSize - 1 ||
                 !IsWhite && (int)move.endPos.y == 0)

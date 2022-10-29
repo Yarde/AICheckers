@@ -6,13 +6,13 @@ namespace Code.Logic
     public class Move
     {
         public Pawn pawn;
-        private Vector2 startPos;
-        public Vector2 endPos;
+        private Vector2Int startPos;
+        public Vector2Int endPos;
         public List<Pawn> hits;
 
         public bool isAttack => hits.Count > 0;
 
-        public Move(Pawn movingPawn, Vector2 from, Vector2 to)
+        public Move(Pawn movingPawn, Vector2Int from, Vector2Int to)
         {
             pawn = movingPawn;
             startPos = from;
@@ -22,7 +22,7 @@ namespace Code.Logic
 
         public bool Equals(int x1, int y1, int x2, int y2)
         {
-            return x1 == (int) startPos.x && y1 == (int) startPos.y && x2 == (int) endPos.x && y2 == (int) endPos.y;
+            return x1 == startPos.x && y1 == startPos.y && x2 == endPos.x && y2 == endPos.y;
         }
     }
 }

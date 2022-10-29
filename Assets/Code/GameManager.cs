@@ -78,7 +78,7 @@ namespace Code
                         var pawnPrefab = y > boardSize / 2 ? blackPawn : whitePawn;
                         var pawnGO = Instantiate(pawnPrefab, new Vector3(x, y, 0), Quaternion.identity,
                             pawnsObject.transform);
-                        var pawn = new Pawn(boardSize, new Vector2(x, y), y <= boardSize / 2, pawnGO);
+                        var pawn = new Pawn(boardSize, new Vector2Int(x, y), y <= boardSize / 2, pawnGO);
                         _pawns.Add(pawn);
                     }
                 }
