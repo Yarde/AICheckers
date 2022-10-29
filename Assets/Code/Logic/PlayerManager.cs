@@ -6,7 +6,6 @@ using Code.Utils;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace Code.Logic
@@ -18,7 +17,7 @@ namespace Code.Logic
         private readonly PlayerBase _playerRandom;
         private readonly PlayerData _whitePlayerData;
         private readonly PlayerData _blackPlayerData;
-        
+
         private readonly int _boardSize;
         private readonly float _gameStart;
 
@@ -43,7 +42,7 @@ namespace Code.Logic
 
             _playerWhite = CreateAI(whitePlayerData);
             _playerBlack = CreateAI(blackPlayerData);
-            _playerRandom = CreateAI(new PlayerData{algorithmType = AlgorithmType.Random});
+            _playerRandom = CreateAI(new PlayerData { algorithmType = AlgorithmType.Random });
         }
 
         private PlayerBase CreateAI(PlayerData data)
@@ -61,6 +60,7 @@ namespace Code.Logic
 
         public async UniTask MakeTurn(List<Pawn> pawns)
         {
+            var turnStartTime = Time.realtimeSinceStartup;
             var playerData = _isWhiteTurn ? _whitePlayerData : _blackPlayerData;
 
             var player = _turnCounter / 2 < playerData.randomStartMoves
@@ -69,7 +69,16 @@ namespace Code.Logic
                     ? _playerWhite
                     : _playerBlack;
             var move = player.Search(pawns, _isWhiteTurn, playerData);
-            var result = MakeAiTurn(await move, pawns);
+            var result = MakeMove(await move, pawns);
+
+            if (_isWhiteTurn)
+            {
+                _whiteTime += Time.realtimeSinceStartup - turnStartTime;
+            }
+            else
+            {
+                _blackTime += Time.realtimeSinceStartup - turnStartTime;
+            }
 
             if (result != GameResult.InProgress)
             {
@@ -85,7 +94,7 @@ namespace Code.Logic
             }
         }
 
-        private GameResult MakeAiTurn(Move move, List<Pawn> pawns)
+        private GameResult MakeMove(Move move, List<Pawn> pawns)
         {
             if (move != null)
             {
@@ -112,7 +121,7 @@ namespace Code.Logic
             }
         }
 
-        private GameResult CheckWin(List<Pawn> pawns)
+        private GameResult CheckWin(IReadOnlyCollection<Pawn> pawns)
         {
             if (!pawns.Any(p => p.IsWhite))
             {

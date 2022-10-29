@@ -27,8 +27,8 @@ namespace Code.Logic
             }
         }
 
-        public bool IsSafe => Position.x == 0 || Position.x == _boardSize - 1;
-        public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? _boardSize - 1 - Position.y : Position.y;
+        public bool IsSafe => Position.y == 0 || Position.y == _boardSize - 1;
+        public int DistanceToPromotion => IsQueen ? 0 : IsWhite ? _boardSize - 1 - Position.x : Position.x;
 
         public Pawn(int boardSize, Vector2Int vector2, bool b, PawnView pawnGo)
         {

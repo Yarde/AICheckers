@@ -4,7 +4,6 @@ using System.Linq;
 using Code.Logic.EvaluationFunction;
 using Code.Utils;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace Code.Logic.AI
 {
@@ -31,10 +30,12 @@ namespace Code.Logic.AI
 
         public abstract UniTask<Move> Search(List<Pawn> pawns, bool isWhiteTurn, PlayerData whitePlayerData);
 
-        protected bool IsGameFinished(List<Pawn> state)
+        protected static bool IsGameFinished(List<Pawn> state)
         {
-            // todo add draw and pat conditions here
-            return state.All(p => p.IsWhite) || state.All(p => !p.IsWhite);
+            var isWin = state.All(p => p.IsWhite) || state.All(p => !p.IsWhite);
+            var isPat = state.All(p => p.IsWhite && p.Moves.Count == 0)  
+                         || state.All(p => !p.IsWhite && p.Moves.Count == 0);
+            return isWin || isPat;
         }
 
         protected int GetStateValue(List<Pawn> state)
@@ -46,13 +47,12 @@ namespace Code.Logic.AI
                 value = 1000;
             }
 
-            if (state.All(p => p.IsWhite == !_isWhitePlayer))
+            if (state.All(p => p.IsWhite != _isWhitePlayer))
             {
                 value = -1000;
             }
-
-            // todo change that condition
-            if (_endgame && state.All(p => p.IsQueen))
+            
+            if (_endgame && state.Where(p => p.IsWhite == _isWhitePlayer).All(p => p.IsQueen))
             {
                 _evaluator = new EndgameEvaluator();
             }
@@ -66,15 +66,14 @@ namespace Code.Logic.AI
             var moves = new List<Move>();
             foreach (var pawn in state)
             {
-                if (isWhiteTurn == pawn.IsWhite)
+                if (isWhiteTurn != pawn.IsWhite) continue;
+                
+                foreach (var move in pawn.Moves)
                 {
-                    foreach (var move in pawn.Moves)
+                    var isValid = IsMoveValid(move, state, isWhiteTurn);
+                    if (isValid)
                     {
-                        var isValid = IsMoveValid(move, state, isWhiteTurn);
-                        if (isValid)
-                        {
-                            moves.Add(move);
-                        }
+                        moves.Add(move);
                     }
                 }
             }

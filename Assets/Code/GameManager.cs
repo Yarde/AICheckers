@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Code.Logic;
 using Code.Utils;
@@ -15,7 +14,7 @@ namespace Code
 
         [SerializeField] private BoxCollider boardObject;
         [SerializeField] private Transform cameraPos;
-        [SerializeField] private GameObject pawnsObject;
+        [SerializeField] private Transform pawnsObject;
 
         [SerializeField] private PawnView whitePawn;
         [SerializeField] private PawnView blackPawn;
@@ -63,9 +62,9 @@ namespace Code
 
         private void GenerateBoard()
         {
-            for (int y = 0; y < boardSize; y++)
+            for (var y = 0; y < boardSize; y++)
             {
-                for (int x = 0; x < boardSize; x++)
+                for (var x = 0; x < boardSize; x++)
                 {
                     var squarePrefab = (y + x) % 2 == 0 ? blackSquare : whiteSquare;
 
@@ -74,14 +73,13 @@ namespace Code
                     square.name = $"S{y}-{x}";
                     _board[y, x] = square;
 
-                    if ((y + x) % 2 == 0 && (y < pawnRows || y >= boardSize - pawnRows))
-                    {
-                        var pawnPrefab = y > boardSize / 2 ? blackPawn : whitePawn;
-                        var pawnGO = Instantiate(pawnPrefab, new Vector3(x, y, 0), Quaternion.identity,
-                            pawnsObject.transform);
-                        var pawn = new Pawn(boardSize, new Vector2Int(x, y), y <= boardSize / 2, pawnGO);
-                        _pawns.Add(pawn);
-                    }
+                    if ((y + x) % 2 != 0 || (y >= pawnRows && y < boardSize - pawnRows)) continue;
+                    
+                    var pawnPrefab = y > boardSize / 2 ? blackPawn : whitePawn;
+                    var pawnView = Instantiate(pawnPrefab, new Vector3(x, y, 0), Quaternion.identity,
+                        pawnsObject);
+                    var pawn = new Pawn(boardSize, new Vector2Int(x, y), y <= boardSize / 2, pawnView);
+                    _pawns.Add(pawn);
                 }
             }
 

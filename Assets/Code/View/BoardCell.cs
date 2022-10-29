@@ -23,16 +23,8 @@ namespace Code.View
 
         public async UniTask Highlight(bool isAttack)
         {
-            if (isAttack)
-            {
-                await spriteRenderer.DOColor(attackColor, duration);
-                await spriteRenderer.DOColor(_baseColor, duration);
-            }
-            else
-            {
-                await spriteRenderer.DOColor(moveColor, duration);
-                await spriteRenderer.DOColor(_baseColor, duration);
-            }
+            await spriteRenderer.DOColor(isAttack ? attackColor : moveColor, duration);
+            await spriteRenderer.DOColor(_baseColor, duration);
         }
     }
 }
