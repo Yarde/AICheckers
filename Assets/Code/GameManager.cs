@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Code.View;
 using UnityEngine;
@@ -15,13 +16,13 @@ namespace Code
 
         [SerializeField] private PawnView whitePawn;
         [SerializeField] private PawnView blackPawn;
-        [SerializeField] private GameObject whiteSquare;
-        [SerializeField] private GameObject blackSquare;
+        [SerializeField] private BoardCell whiteSquare;
+        [SerializeField] private BoardCell blackSquare;
 
         [SerializeField] private PlayerData whitePlayerData;
         [SerializeField] private PlayerData blackPlayerData;
 
-        private GameObject[,] _board;
+        private BoardCell[,] _board;
         private List<Pawn> _pawns;
 
         private bool _turnInProgress;
@@ -33,7 +34,7 @@ namespace Code
         {
             Application.runInBackground = true;
 
-            _board = new GameObject[boardSize, boardSize];
+            _board = new BoardCell[boardSize, boardSize];
             _pawns = new List<Pawn>();
 
             boardObject.size = new Vector3(boardSize, boardSize, 1);
@@ -101,7 +102,7 @@ namespace Code
         public void AnimateMoves(Move move)
         {
             var field = _board[(int)move.endPos.y, (int)move.endPos.x];
-            field.GetComponent<Animation>().Play();
+            field.Highlight();
         }
     }
 }
