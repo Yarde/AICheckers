@@ -6,7 +6,7 @@ namespace Code.Logic.EvaluationFunction
 {
     public class EndgameEvaluator : EvaluatorBase
     {
-        public override int Evaluate(IEnumerable<Pawn> state, bool isWhitePlayer, int value)
+        public override int Evaluate(IReadOnlyList<Pawn> state, bool isWhitePlayer, int value)
         {
             value += 100;
             var myPawns = state.Where(p => isWhitePlayer == p.IsWhite).ToList();

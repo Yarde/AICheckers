@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Code.Model;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace Code.Logic.AI
         {
         }
 
-        public override async UniTask<Move> Search(List<Pawn> state, bool isWhiteTurn, PlayerData data)
+        public override async UniTask<Move> Search(IReadOnlyList<Pawn> state, bool isWhiteTurn, PlayerData data)
         {
             _isWhitePlayer = isWhiteTurn;
             _isWhiteTurn = isWhiteTurn;
@@ -22,12 +23,13 @@ namespace Code.Logic.AI
             }
 
             var (value, move) = MaxValue(state, _isWhiteTurn, data.searchDepth, float.MinValue, float.MaxValue);
-            // var playerName = isWhiteTurn ? "white" : "black";
-            //Debug.Log($"best move value for {playerName} is {value}");
+             var playerName = isWhiteTurn ? "white" : "black";
+            Debug.Log($"best move value for {playerName} is {value}");
+            await UniTask.CompletedTask;
             return move;
         }
 
-        private (int, Move) MaxValue(List<Pawn> state, bool isWhiteTurn, int depth, float alpha, float beta)
+        private (int, Move) MaxValue(IReadOnlyList<Pawn> state, bool isWhiteTurn, int depth, float alpha, float beta)
         {
             if (depth == 0 || IsGameFinished(state))
             {
@@ -39,7 +41,7 @@ namespace Code.Logic.AI
             var actions = Actions(state, isWhiteTurn);
             foreach (var action in actions)
             {
-                var (value2, _) = MinValue(Result(state, action), !isWhiteTurn, depth - 1, alpha, beta);
+                var value2 = MinValue(Result(state, action), !isWhiteTurn, depth - 1, alpha, beta);
                 if (value2 > value || (value2 == value && Random.Range(0.0f, 1.0f) > 0.5f))
                 {
                     value = value2;
@@ -56,15 +58,14 @@ namespace Code.Logic.AI
             return (value, move);
         }
 
-        private (int, Move) MinValue(List<Pawn> state, bool isWhiteTurn, int depth, float alpha, float beta)
+        private int MinValue(IReadOnlyList<Pawn> state, bool isWhiteTurn, int depth, float alpha, float beta)
         {
             if (depth == 0 || IsGameFinished(state))
             {
-                return (GetStateValue(state), null);
+                return GetStateValue(state);
             }
 
             var value = int.MaxValue;
-            Move move = null;
             var actions = Actions(state, isWhiteTurn);
             foreach (var action in actions)
             {
@@ -72,17 +73,16 @@ namespace Code.Logic.AI
                 if (value2 < value || (value2 == value && Random.Range(0.0f, 1.0f) > 0.5f))
                 {
                     value = value2;
-                    move = action;
                     beta = Mathf.Min(beta, value);
                 }
 
                 if (value <= alpha)
                 {
-                    return (value, move);
+                    return value;
                 }
             }
 
-            return (value, move);
+            return value;
         }
     }
 }

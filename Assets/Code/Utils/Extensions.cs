@@ -10,7 +10,7 @@ namespace Code.Utils
             return pawn.IsWhite == isWhiteTurn;
         }
 
-        public static void GenerateMoves(this List<Pawn> state)
+        public static void GenerateMoves(this IReadOnlyList<Pawn> state)
         {
             foreach (var pawn in state)
             {

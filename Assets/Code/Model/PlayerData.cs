@@ -2,7 +2,7 @@ using System;
 using Code.Logic.AI;
 using Code.Logic.EvaluationFunction;
 
-namespace Code.Logic
+namespace Code.Model
 {
     [Serializable]
     public struct PlayerData

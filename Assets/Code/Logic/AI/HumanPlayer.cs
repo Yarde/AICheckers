@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Code.Model;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Code.Logic.AI
             _gameManager = Object.FindObjectOfType<GameManager>();
         }
 
-        public override async UniTask<Move> Search(List<Pawn> pawns, bool isWhiteTurn, PlayerData data)
+        public override async UniTask<Move> Search(IReadOnlyList<Pawn> pawns, bool isWhiteTurn, PlayerData data)
         {
             Move move = null;
             await UniTask.WaitUntil(() =>
@@ -30,7 +31,7 @@ namespace Code.Logic.AI
             return move;
         }
 
-        private Move GetMove(List<Pawn> pawns, bool isWhiteTurn)
+        private Move GetMove(IReadOnlyCollection<Pawn> pawns, bool isWhiteTurn)
         {
             if (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonUp(0))
             {
@@ -61,7 +62,7 @@ namespace Code.Logic.AI
             return null;
         }
 
-        private void SelectPawn(int x, int y, List<Pawn> pawns, bool isWhiteTurn)
+        private void SelectPawn(int x, int y, IReadOnlyCollection<Pawn> pawns, bool isWhiteTurn)
         {
             var pawn = pawns.FirstOrDefault(p => p.Position.x == x && p.Position.y == y);
             if (pawn == null) return;
@@ -71,20 +72,20 @@ namespace Code.Logic.AI
             var hasHit = HasHit(pawns, isWhiteTurn);
             foreach (var move in _selected.Moves)
             {
-                if (!hasHit || move.isAttack)
+                if (!hasHit || move.IsAttack)
                 {
-                    _gameManager.AnimateMoves(move, move.isAttack);
+                    _gameManager.AnimateMoves(move, move.IsAttack);
                 }
             }
         }
 
-        private Move ValidMove(int x1, int y1, int x2, int y2, List<Pawn> pawns, bool isWhiteTurn)
+        private Move ValidMove(int x1, int y1, int x2, int y2, IEnumerable<Pawn> pawns, bool isWhiteTurn)
         {
             foreach (var move in _selected.Moves)
             {
                 if (move.Equals(x1, y1, x2, y2))
                 {
-                    if (move.isAttack)
+                    if (move.IsAttack)
                     {
                         return move;
                     }
@@ -97,13 +98,13 @@ namespace Code.Logic.AI
         }
 
 
-        private bool HasHit(List<Pawn> pawns, bool isWhiteTurn)
+        private bool HasHit(IEnumerable<Pawn> pawns, bool isWhiteTurn)
         {
             foreach (var pawn in pawns)
             {
                 if (pawn != null && isWhiteTurn == pawn.IsWhite)
                 {
-                    var attacks = pawn.Moves.Where(p => p.isAttack).ToList();
+                    var attacks = pawn.Moves.Where(p => p.IsAttack).ToList();
                     foreach (var attack in attacks)
                     {
                         _gameManager.AnimateMoves(attack, true);

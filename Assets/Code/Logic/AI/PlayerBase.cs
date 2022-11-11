@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Code.Logic.EvaluationFunction;
+using Code.Model;
 using Code.Utils;
 using Cysharp.Threading.Tasks;
 
@@ -26,9 +27,9 @@ namespace Code.Logic.AI
             };
         }
 
-        public abstract UniTask<Move> Search(List<Pawn> pawns, bool isWhiteTurn, PlayerData whitePlayerData);
+        public abstract UniTask<Move> Search(IReadOnlyList<Pawn> pawns, bool isWhiteTurn, PlayerData whitePlayerData);
 
-        protected static bool IsGameFinished(List<Pawn> state)
+        protected static bool IsGameFinished(IReadOnlyList<Pawn> state)
         {
             var isWin = state.All(p => p.IsWhite) || state.All(p => !p.IsWhite);
             var isPat = state.All(p => p.IsWhite && p.Moves.Count == 0)
@@ -36,7 +37,7 @@ namespace Code.Logic.AI
             return isWin || isPat;
         }
 
-        protected int GetStateValue(List<Pawn> state)
+        protected int GetStateValue(IReadOnlyList<Pawn> state)
         {
             var value = 0;
 
@@ -59,7 +60,7 @@ namespace Code.Logic.AI
             return value;
         }
 
-        protected List<Move> Actions(List<Pawn> state, bool isWhiteTurn)
+        protected List<Move> Actions(IReadOnlyList<Pawn> state, bool isWhiteTurn)
         {
             var moves = new List<Move>();
             foreach (var pawn in state)
@@ -79,7 +80,7 @@ namespace Code.Logic.AI
             return moves;
         }
 
-        protected List<Pawn> Result(List<Pawn> state, Move move)
+        protected static List<Pawn> Result(IEnumerable<Pawn> state, Move move)
         {
             var newState = new List<Pawn>();
             foreach (var pawn in state)
@@ -103,9 +104,9 @@ namespace Code.Logic.AI
             return newState;
         }
 
-        private bool IsMoveValid(Move move, IEnumerable<Pawn> state, bool isWhiteTurn)
+        private static bool IsMoveValid(Move move, IEnumerable<Pawn> state, bool isWhiteTurn)
         {
-            if (move.isAttack)
+            if (move.IsAttack)
             {
                 return true;
             }
@@ -115,7 +116,7 @@ namespace Code.Logic.AI
 
         private static bool HasHit(IEnumerable<Pawn> state, bool isWhiteTurn)
         {
-            return state.Any(pawn => pawn.Moves.Any(p => p.isAttack && pawn.IsMine(isWhiteTurn)));
+            return state.Any(pawn => pawn.Moves.Any(p => p.IsAttack && pawn.IsMine(isWhiteTurn)));
         }
     }
 }

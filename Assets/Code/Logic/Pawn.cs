@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Code.Model;
 using Code.View;
 using UnityEngine;
 
@@ -46,7 +47,7 @@ namespace Code.Logic
             _boardSize = pawnBoardSize;
         }
 
-        public void GeneratePossibleMoves(List<Pawn> pawns)
+        public void GeneratePossibleMoves(IReadOnlyList<Pawn> pawns)
         {
             Moves.Clear();
 
@@ -67,11 +68,11 @@ namespace Code.Logic
 
         private void ValidMovesOnly()
         {
-            var hasHit = Moves.Any(x => x.isAttack);
+            var hasHit = Moves.Any(x => x.IsAttack);
 
             if (hasHit)
             {
-                Moves.RemoveAll(x => !x.isAttack);
+                Moves.RemoveAll(x => !x.IsAttack);
             }
         }
 

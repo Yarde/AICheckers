@@ -4,7 +4,7 @@ namespace Code.Logic.EvaluationFunction
 {
     public class PawnValueEvaluator : EvaluatorBase
     {
-        public override int Evaluate(IEnumerable<Pawn> state, bool isWhitePlayer, int value)
+        public override int Evaluate(IReadOnlyList<Pawn> state, bool isWhitePlayer, int value)
         {
             foreach (var pawn in state)
             {

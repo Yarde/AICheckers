@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Code.Logic.AI;
+using Code.Model;
 using Code.Utils;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -108,7 +109,7 @@ namespace Code.Logic
                 return CheckWin(pawns);
             }
 
-            return GameResult.Pat;
+            return _isWhiteTurn ? GameResult.BlackWin : GameResult.WhiteWin;
         }
 
         private void AttackPawn(Move move, List<Pawn> pawns)
@@ -147,7 +148,6 @@ namespace Code.Logic
         WhiteWin,
         BlackWin,
         Draw,
-        Pat,
         InProgress
     }
 }
