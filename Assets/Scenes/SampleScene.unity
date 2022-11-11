@@ -312,15 +312,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af1a5fc34cb1d774ca627f8742f7fa5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardSize: 8
-  pawnRows: 3
   boardObject: {fileID: 408162529}
   cameraPos: {fileID: 519420032}
   pawnsObject: {fileID: 194447984}
-  whitePawn: {fileID: 6946046890347107772, guid: 274c6885a3638c045b9460767f0bd239, type: 3}
-  blackPawn: {fileID: 3542530858051725554, guid: 92e0068f127f41f448fd2a163114ca2a, type: 3}
-  whiteSquare: {fileID: 2404155963576558139, guid: f58b294832cbaf74e9eee07e965d39ff, type: 3}
-  blackSquare: {fileID: 6062177095056143405, guid: 8010d96d479533e4582daf7e891563a0, type: 3}
+  boardData: {fileID: 11400000, guid: 675e8b2f802e44e9e90f9ff467cbe1a3, type: 2}
   whitePlayerData:
     algorithmType: 2
     functionType: 0
@@ -331,7 +326,7 @@ MonoBehaviour:
     algorithmType: 2
     functionType: 2
     searchDepth: 5
-    useEndgameHeuristic: 1
+    useEndgameHeuristic: 0
     randomStartMoves: 2
 --- !u!4 &1925603073
 Transform:

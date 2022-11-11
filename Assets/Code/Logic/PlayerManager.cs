@@ -21,6 +21,7 @@ namespace Code.Logic
 
         private readonly int _boardSize;
         private readonly float _gameStart;
+        private readonly BoardManager _boardManager;
 
         private int _lastAttackTurn;
         private int _turnCounter;
@@ -32,11 +33,12 @@ namespace Code.Logic
         private float _whiteTime;
         private float _blackTime;
 
-        public PlayerManager(PlayerData whitePlayerData, PlayerData blackPlayerData, int boardSize)
+        public PlayerManager(PlayerData whitePlayerData, PlayerData blackPlayerData, int boardSize, BoardManager boardManager)
         {
             _gameStart = Time.realtimeSinceStartup;
             _isWhiteTurn = Random.Range(0.0f, 1.0f) > 0.5f;
             _boardSize = boardSize;
+            _boardManager = boardManager;
 
             _whitePlayerData = whitePlayerData;
             _blackPlayerData = blackPlayerData;
@@ -50,7 +52,7 @@ namespace Code.Logic
         {
             PlayerBase player = data.algorithmType switch
             {
-                AlgorithmType.HumanPlayer => new HumanPlayer(_boardSize, data),
+                AlgorithmType.HumanPlayer => new HumanPlayer(_boardSize, data, _boardManager),
                 AlgorithmType.MinMax => new MinMaxPlayer(_boardSize, data),
                 AlgorithmType.AlphaBetaPruning => new AlphaBetaPruningPlayer(_boardSize, data),
                 AlgorithmType.Random => new RandomSearchPlayer(_boardSize, data),
@@ -59,7 +61,7 @@ namespace Code.Logic
             return player;
         }
 
-        public async UniTask MakeTurn(List<Pawn> pawns)
+        public async UniTask MakeTurn()
         {
             var turnStartTime = Time.realtimeSinceStartup;
             var playerData = _isWhiteTurn ? _whitePlayerData : _blackPlayerData;
@@ -69,8 +71,8 @@ namespace Code.Logic
                 : _isWhiteTurn
                     ? _playerWhite
                     : _playerBlack;
-            var move = player.Search(pawns, _isWhiteTurn, playerData);
-            var result = MakeMove(await move, pawns);
+            var move = player.Search(_boardManager.Pawns, _isWhiteTurn, playerData);
+            var result = MakeMove(await move, _boardManager.Pawns);
 
             if (_isWhiteTurn)
             {

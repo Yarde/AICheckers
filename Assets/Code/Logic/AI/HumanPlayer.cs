@@ -10,13 +10,13 @@ namespace Code.Logic.AI
     {
         private Vector2 _mousePosition;
         private readonly Camera _camera;
-        private readonly GameManager _gameManager;
         private Pawn _selected;
+        private readonly BoardManager _boardManager;
 
-        public HumanPlayer(int boardSize, PlayerData data) : base(boardSize, data)
+        public HumanPlayer(int boardSize, PlayerData data, BoardManager boardManager) : base(boardSize, data)
         {
             _camera = Camera.main;
-            _gameManager = Object.FindObjectOfType<GameManager>();
+            _boardManager = boardManager;
         }
 
         public override async UniTask<Move> Search(IReadOnlyList<Pawn> pawns, bool isWhiteTurn, PlayerData data)
@@ -74,7 +74,7 @@ namespace Code.Logic.AI
             {
                 if (!hasHit || move.IsAttack)
                 {
-                    _gameManager.AnimateMoves(move, move.IsAttack);
+                    _boardManager.AnimateMoves(move, move.IsAttack);
                 }
             }
         }
@@ -107,7 +107,7 @@ namespace Code.Logic.AI
                     var attacks = pawn.Moves.Where(p => p.IsAttack).ToList();
                     foreach (var attack in attacks)
                     {
-                        _gameManager.AnimateMoves(attack, true);
+                        _boardManager.AnimateMoves(attack, true);
                     }
 
                     if (attacks.Count > 0)
