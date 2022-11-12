@@ -9,10 +9,10 @@ namespace Code.Logic.EvaluationFunction
             foreach (var pawn in state)
             {
                 var pawnValue = pawn.IsQueen ? 50 : 25;
-                pawnValue += pawn.Moves.Count * 5;
-                pawnValue += pawn.IsSafe ? 8 : 0;
-                pawnValue -= pawn.DistanceToPromotion * 2;
-                
+                pawnValue += pawn.Moves.Count * 10;
+                pawnValue += pawn.IsSafe ? 20 : 0;
+                pawnValue -= pawn.DistanceToPromotion * 5;
+
                 if (isWhitePlayer == pawn.IsWhite || !isWhitePlayer == !pawn.IsWhite)
                 {
                     value += pawnValue;

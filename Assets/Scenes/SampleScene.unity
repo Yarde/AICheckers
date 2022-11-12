@@ -323,11 +323,11 @@ MonoBehaviour:
     useEndgameHeuristic: 0
     randomStartMoves: 0
   blackPlayerData:
-    algorithmType: 0
+    algorithmType: 1
     functionType: 2
     searchDepth: 5
     useEndgameHeuristic: 0
-    randomStartMoves: 0
+    randomStartMoves: 1
 --- !u!4 &1925603073
 Transform:
   m_ObjectHideFlags: 0

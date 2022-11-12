@@ -100,6 +100,7 @@ namespace Code.Logic.AI
 
         private bool HasHit(IEnumerable<Pawn> pawns, bool isWhiteTurn)
         {
+            var attackDetected = false;
             foreach (var pawn in pawns)
             {
                 if (pawn != null && isWhiteTurn == pawn.IsWhite)
@@ -107,18 +108,15 @@ namespace Code.Logic.AI
                     var attacks = pawn.Moves.Where(p => p.IsAttack).ToList();
                     foreach (var attack in attacks)
                     {
+                        attackDetected = true;
                         _boardManager.AnimateMoves(attack);
-                    }
-
-                    if (attacks.Count > 0)
-                    {
-                        Debug.Log($"You have hit with: {string.Join(", ", attacks.Select(a => a.Pawn.Position))}!");
-                        return true;
                     }
                 }
             }
 
-            return false;
+            if (!attackDetected) return false;
+            Debug.Log("You have hit!");
+            return true;
         }
 
         private void UpdateMouse()

@@ -32,8 +32,6 @@ namespace Code.Logic.AI
             var value = int.MinValue;
             Move move = null;
             var actions = Actions(state, isWhiteTurn);
-            var playerName = isWhiteTurn ? "white" : "black";
-            Debug.Log($"possible moves {actions.Count} on depth {depth} during {playerName} turn");
             foreach (var action in actions)
             {
                 var value2 = MinValue(Result(state, action), !isWhiteTurn, depth - 1);
@@ -56,8 +54,6 @@ namespace Code.Logic.AI
 
             var value = int.MaxValue;
             var actions = Actions(state, isWhiteTurn);
-            var playerName = isWhiteTurn ? "white" : "black";
-            Debug.Log($"possible moves {actions.Count} on depth {depth} during {playerName} turn");
             foreach (var action in actions)
             {
                 var (value2, _) = MaxValue(Result(state, action), !isWhiteTurn, depth - 1);
