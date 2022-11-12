@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Code.Utils;
 
 namespace Code.Logic.EvaluationFunction
 {
@@ -8,7 +9,7 @@ namespace Code.Logic.EvaluationFunction
         {
             foreach (var pawn in state)
             {
-                if (isWhitePlayer == pawn.IsWhite || !isWhitePlayer == !pawn.IsWhite)
+                if (pawn.IsMine(isWhitePlayer))
                 {
                     value += pawn.IsQueen ? 2 : 1;
                 }

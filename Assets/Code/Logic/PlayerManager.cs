@@ -71,8 +71,9 @@ namespace Code.Logic
                 : _isWhiteTurn
                     ? _playerWhite
                     : _playerBlack;
-            var move = player.Search(_boardManager.Pawns, _isWhiteTurn, playerData);
-            var result = MakeMove(await move, _boardManager.Pawns);
+            var move = await player.Search(_boardManager.Pawns, _isWhiteTurn, playerData);
+            player.LogState(_boardManager.Pawns, move);
+            var result = MakeMove(move, _boardManager.Pawns);
 
             if (_isWhiteTurn)
             {

@@ -318,16 +318,16 @@ MonoBehaviour:
   boardData: {fileID: 11400000, guid: 675e8b2f802e44e9e90f9ff467cbe1a3, type: 2}
   whitePlayerData:
     algorithmType: 0
-    functionType: 0
-    searchDepth: 3
+    functionType: 2
+    searchDepth: 4
     useEndgameHeuristic: 0
     randomStartMoves: 0
   blackPlayerData:
-    algorithmType: 1
+    algorithmType: 2
     functionType: 2
     searchDepth: 5
-    useEndgameHeuristic: 0
-    randomStartMoves: 1
+    useEndgameHeuristic: 1
+    randomStartMoves: 0
 --- !u!4 &1925603073
 Transform:
   m_ObjectHideFlags: 0

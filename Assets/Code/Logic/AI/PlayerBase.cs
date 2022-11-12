@@ -5,6 +5,7 @@ using Code.Logic.EvaluationFunction;
 using Code.Model;
 using Code.Utils;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace Code.Logic.AI
 {
@@ -41,17 +42,17 @@ namespace Code.Logic.AI
         {
             var value = 0;
 
-            if (state.All(p => p.IsWhite == _isWhitePlayer))
+            if (state.All(p => p.IsMine(_isWhitePlayer)))
             {
-                value = 1000;
+                return int.MaxValue;
             }
 
-            if (state.All(p => p.IsWhite != _isWhitePlayer))
+            if (state.All(p => !p.IsMine(_isWhitePlayer)))
             {
-                value = -1000;
+                return int.MinValue;
             }
 
-            if (_endgame && state.Where(p => p.IsWhite == _isWhitePlayer).All(p => p.IsQueen))
+            if (_endgame && _evaluator.GetType() == typeof(EndgameEvaluator) && state.Where(p => p.IsMine(_isWhitePlayer)).All(p => p.IsQueen))
             {
                 _evaluator = new EndgameEvaluator();
             }
@@ -60,17 +61,15 @@ namespace Code.Logic.AI
             return value;
         }
 
-        protected List<Move> Actions(IReadOnlyList<Pawn> state, bool isWhiteTurn)
+        protected static IReadOnlyList<Move> Actions(IReadOnlyList<Pawn> state, bool isWhiteTurn)
         {
             var moves = new List<Move>();
             foreach (var pawn in state)
             {
                 if (isWhiteTurn != pawn.IsWhite) continue;
-
                 foreach (var move in pawn.Moves)
                 {
-                    var isValid = IsMoveValid(move, state, isWhiteTurn);
-                    if (isValid)
+                    if (IsMoveValid(move, state, isWhiteTurn))
                     {
                         moves.Add(move);
                     }
@@ -80,7 +79,7 @@ namespace Code.Logic.AI
             return moves;
         }
 
-        protected static List<Pawn> Result(IEnumerable<Pawn> state, Move move)
+        protected static List<Pawn> ResultState(IEnumerable<Pawn> state, Move move)
         {
             var newState = new List<Pawn>();
             foreach (var pawn in state)
@@ -116,7 +115,20 @@ namespace Code.Logic.AI
 
         private static bool HasHit(IEnumerable<Pawn> state, bool isWhiteTurn)
         {
-            return state.Any(pawn => pawn.Moves.Any(p => p.IsAttack && pawn.IsMine(isWhiteTurn)));
+            foreach (var pawn in state)
+            {
+                foreach (var p in pawn.Moves)
+                {
+                    if (p.IsAttack && pawn.IsMine(isWhiteTurn)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void LogState(List<Pawn> state, Move move)
+        {
+            Debug.Log($"Current state value for player {_isWhitePlayer}: {GetStateValue(state)}, after move: {GetStateValue(ResultState(state, move))}");
         }
     }
 }

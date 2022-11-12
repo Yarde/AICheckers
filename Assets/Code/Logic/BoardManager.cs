@@ -23,15 +23,15 @@ namespace Code.Logic
         
         private void GenerateBoard(BoardData boardData, Transform boardTransform, Transform pawnsTransform)
         {
-            for (var y = 0; y < boardData.boardSize; y++)
+            for (var x = 0; x < boardData.boardSize; x++)
             {
-                for (var x = 0; x < boardData.boardSize; x++)
+                for (var y = 0; y < boardData.boardSize; y++)
                 {
                     var squarePrefab = (y + x) % 2 == 0 ? boardData.blackSquare : boardData.whiteSquare;
 
                     var square = Object.Instantiate(squarePrefab, new Vector3(x, y, 0), Quaternion.identity, boardTransform);
-                    square.name = $"S{y}-{x}";
-                    _board[y, x] = square;
+                    square.name = $"S{x}-{y}";
+                    _board[x, y] = square;
 
                     if ((y + x) % 2 != 0 || (y >= boardData.pawnRows && y < boardData.boardSize - boardData.pawnRows)) continue;
                     
@@ -47,8 +47,8 @@ namespace Code.Logic
 
         public void AnimateMoves(Move move)
         {
-            var target = _board[move.EndPos.y, move.EndPos.x];
-            var source = _board[move.StartPos.y, move.StartPos.x];
+            var target = _board[move.EndPos.x, move.EndPos.y];
+            var source = _board[move.StartPos.x, move.StartPos.y];
             target.Highlight(move.Hits.Count > 0).Forget();
             source.Highlight(false).Forget();
         }

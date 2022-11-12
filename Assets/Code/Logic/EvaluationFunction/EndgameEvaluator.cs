@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Code.Utils;
 using UnityEngine;
 
 namespace Code.Logic.EvaluationFunction
@@ -9,8 +10,8 @@ namespace Code.Logic.EvaluationFunction
         public override int Evaluate(IReadOnlyList<Pawn> state, bool isWhitePlayer, int value)
         {
             value += 100;
-            var myPawns = state.Where(p => isWhitePlayer == p.IsWhite).ToList();
-            var enemyPawns = state.Where(p => isWhitePlayer == !p.IsWhite).ToList();
+            var myPawns = state.Where(p => p.IsMine(isWhitePlayer)).ToList();
+            var enemyPawns = state.Where(p => !p.IsMine(isWhitePlayer)).ToList();
             foreach (var myPawn in myPawns)
             {
                 foreach (var enemyPawn in enemyPawns)

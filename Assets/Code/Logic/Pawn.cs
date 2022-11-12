@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Code.Model;
+using Code.Utils;
 using Code.View;
 using UnityEngine;
 
@@ -102,25 +103,10 @@ namespace Code.Logic
             var to = new Vector2Int(from.x + direction.x * 2, from.y + direction.y * 2);
             if (!HasAttack(pawns, direction, from, to, out var pawn)) return;
 
-            Move move;
-            if (previousMove != null)
-            {
-                if (previousMove.HasHit(pawn))
-                {
-                    return;
-                }
-                move = new Move(this, previousMove.Pawn.Position, to);
-                foreach (var hit in previousMove.Hits)
-                {
-                    move.AddHit(hit);
-                }
-            }
-            else
-            {
-                move = new Move(this, Position, to);
-            }
-            Moves.Add(move);
-            move.AddHit(pawn);
+            if (previousMove != null && previousMove.HasHit(pawn))
+                return;
+            
+            var move = GetNewAttackMove(previousMove, to, pawn);
 
             FindAttacks(pawns, new Vector2Int(direction.x, direction.y), to, move);
             FindAttacks(pawns, new Vector2Int(direction.x * -1, direction.y), to, move);
@@ -132,6 +118,27 @@ namespace Code.Logic
             }
         }
 
+        private Move GetNewAttackMove(Move previousMove, Vector2Int to, Pawn pawn)
+        {
+            Move move;
+            if (previousMove != null)
+            {
+                move = new Move(this, previousMove.Pawn.Position, to);
+                foreach (var hit in previousMove.Hits)
+                {
+                    move.AddHit(hit);
+                }
+            }
+            else
+            {
+                move = new Move(this, Position, to);
+            }
+
+            Moves.Add(move);
+            move.AddHit(pawn);
+            return move;
+        }
+
         private bool HasAttack(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from, Vector2Int to,
             out Pawn pawn)
         {
@@ -141,8 +148,7 @@ namespace Code.Logic
 
             pawn = pawns.FirstOrDefault(p =>
                 p.Position.x == from.x + direction.x && p.Position.y == from.y + direction.y);
-            if (pawn == null || pawn.IsWhite == IsWhite) return false;
-            return true;
+            return pawn != null && !pawn.IsMine(IsWhite);
         }
 
         private bool IsOutsideBoard(Vector2Int to)
@@ -151,7 +157,7 @@ namespace Code.Logic
                    to.y < 0 || to.y > _boardSize - 1;
         }
 
-        private static bool TargetCellNotEmpty(IReadOnlyCollection<Pawn> pawns, Vector2Int to)
+        private static bool TargetCellNotEmpty(IEnumerable<Pawn> pawns, Vector2Int to)
         {
             var target = pawns.FirstOrDefault(p =>
                 p.Position.x == to.x &&
@@ -168,8 +174,7 @@ namespace Code.Logic
 
             Position = new Vector2Int(move.EndPos.x, move.EndPos.y);
 
-            if (IsWhite && move.EndPos.y == _boardSize - 1 ||
-                !IsWhite && move.EndPos.y == 0)
+            if (IsWhite && move.EndPos.y == _boardSize - 1 || !IsWhite && move.EndPos.y == 0)
             {
                 IsQueen = true;
             }

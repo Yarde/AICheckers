@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Code.Utils;
 
 namespace Code.Logic.EvaluationFunction
 {
     public class PawnBoardValueEvaluator : EvaluatorBase
     {
-        private int _boardSize;
+        private readonly int _boardSize;
         
         public PawnBoardValueEvaluator(int boardSize)
         {
@@ -19,7 +20,7 @@ namespace Code.Logic.EvaluationFunction
                         (!pawn.IsWhite && pawn.Position.y < _boardSize / 2.0f)
                     ? 7
                     : 5;
-                if (isWhitePlayer == pawn.IsWhite || !isWhitePlayer == !pawn.IsWhite)
+                if (pawn.IsMine(isWhitePlayer))
                 {
                     value += pawn.IsQueen ? 10 : v;
                 }

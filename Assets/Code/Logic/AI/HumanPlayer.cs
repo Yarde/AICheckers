@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Code.Model;
+using Code.Utils;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ namespace Code.Logic.AI
 
         public override async UniTask<Move> Search(IReadOnlyList<Pawn> pawns, bool isWhiteTurn, PlayerData data)
         {
+            _isWhitePlayer = isWhiteTurn;
             Move move = null;
             await UniTask.WaitUntil(() =>
             {
@@ -55,8 +57,6 @@ namespace Code.Logic.AI
                 {
                     return move;
                 }
-
-                Debug.Log("Invalid move!");
             }
 
             return null;
@@ -66,7 +66,7 @@ namespace Code.Logic.AI
         {
             var pawn = pawns.FirstOrDefault(p => p.Position.x == x && p.Position.y == y);
             if (pawn == null) return;
-            if (pawn.IsWhite != isWhiteTurn) return;
+            if (!pawn.IsMine(isWhiteTurn)) return;
 
             _selected = pawn;
             var hasHit = HasHit(pawns, isWhiteTurn);
@@ -83,15 +83,17 @@ namespace Code.Logic.AI
         {
             foreach (var move in _selected.Moves)
             {
-                if (move.Equals(x1, y1, x2, y2))
+                if (!move.Equals(x1, y1, x2, y2))
                 {
-                    if (move.IsAttack)
-                    {
-                        return move;
-                    }
-
-                    return HasHit(pawns, isWhiteTurn) ? null : move;
+                    continue;
                 }
+                
+                if (move.IsAttack)
+                {
+                    return move;
+                }
+
+                return HasHit(pawns, isWhiteTurn) ? null : move;
             }
 
             return null;
@@ -114,9 +116,7 @@ namespace Code.Logic.AI
                 }
             }
 
-            if (!attackDetected) return false;
-            Debug.Log("You have hit!");
-            return true;
+            return attackDetected;
         }
 
         private void UpdateMouse()

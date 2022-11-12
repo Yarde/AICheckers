@@ -22,9 +22,7 @@ namespace Code.Logic.AI
                 return actions[0];
             }
 
-            var (value, move) = MaxValue(state, _isWhiteTurn, data.searchDepth, float.MinValue, float.MaxValue);
-             var playerName = isWhiteTurn ? "white" : "black";
-            Debug.Log($"best move value for {playerName} is {value}");
+            var (_, move) = MaxValue(state, _isWhiteTurn, data.searchDepth, float.MinValue, float.MaxValue);
             await UniTask.CompletedTask;
             return move;
         }
@@ -41,7 +39,7 @@ namespace Code.Logic.AI
             var actions = Actions(state, isWhiteTurn);
             foreach (var action in actions)
             {
-                var value2 = MinValue(Result(state, action), !isWhiteTurn, depth - 1, alpha, beta);
+                var value2 = MinValue(ResultState(state, action), !isWhiteTurn, depth - 1, alpha, beta);
                 if (value2 > value || (value2 == value && Random.Range(0.0f, 1.0f) > 0.5f))
                 {
                     value = value2;
@@ -69,7 +67,7 @@ namespace Code.Logic.AI
             var actions = Actions(state, isWhiteTurn);
             foreach (var action in actions)
             {
-                var (value2, _) = MaxValue(Result(state, action), !isWhiteTurn, depth - 1, alpha, beta);
+                var (value2, _) = MaxValue(ResultState(state, action), !isWhiteTurn, depth - 1, alpha, beta);
                 if (value2 < value || (value2 == value && Random.Range(0.0f, 1.0f) > 0.5f))
                 {
                     value = value2;

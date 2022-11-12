@@ -97,6 +97,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f3c004586944f82ad0ebb30f3d629c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  duration: 0.4
   moveColor: {r: 0.19421315, g: 1, b: 0, a: 1}
   attackColor: {r: 1, g: 0, b: 0, a: 1}
   spriteRenderer: {fileID: 5322619190374233256}
+  text: {fileID: 0}
