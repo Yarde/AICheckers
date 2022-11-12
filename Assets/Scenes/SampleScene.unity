@@ -317,17 +317,17 @@ MonoBehaviour:
   pawnsObject: {fileID: 194447984}
   boardData: {fileID: 11400000, guid: 675e8b2f802e44e9e90f9ff467cbe1a3, type: 2}
   whitePlayerData:
-    algorithmType: 2
+    algorithmType: 0
     functionType: 0
     searchDepth: 3
     useEndgameHeuristic: 0
-    randomStartMoves: 2
+    randomStartMoves: 0
   blackPlayerData:
-    algorithmType: 2
+    algorithmType: 0
     functionType: 2
     searchDepth: 5
     useEndgameHeuristic: 0
-    randomStartMoves: 2
+    randomStartMoves: 0
 --- !u!4 &1925603073
 Transform:
   m_ObjectHideFlags: 0

@@ -85,13 +85,13 @@ namespace Code.Logic.AI
             var newState = new List<Pawn>();
             foreach (var pawn in state)
             {
-                if (move.hits.Contains(pawn))
+                if (move.HasHit(pawn))
                 {
                     continue;
                 }
 
                 var newPawn = pawn.Copy();
-                if (pawn == move.pawn)
+                if (pawn == move.Pawn)
                 {
                     newPawn.Move(move);
                 }

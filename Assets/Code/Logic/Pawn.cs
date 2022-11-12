@@ -97,44 +97,52 @@ namespace Code.Logic
             }
         }
 
-        private void FindAttacks(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from)
+        private void FindAttacks(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from, Move previousMove = null)
         {
-            if (CheckAttack(pawns, direction, from, out var to, out var pawn)) return;
+            var to = new Vector2Int(from.x + direction.x * 2, from.y + direction.y * 2);
+            if (!HasAttack(pawns, direction, from, to, out var pawn)) return;
 
-            var move = new Move(this, Position, to);
+            Move move;
+            if (previousMove != null)
+            {
+                if (previousMove.HasHit(pawn))
+                {
+                    return;
+                }
+                move = new Move(this, previousMove.Pawn.Position, to);
+                foreach (var hit in previousMove.Hits)
+                {
+                    move.AddHit(hit);
+                }
+            }
+            else
+            {
+                move = new Move(this, Position, to);
+            }
             Moves.Add(move);
-            move.hits.Add(pawn);
+            move.AddHit(pawn);
 
-            FindConsecutiveAttacks(pawns, new Vector2Int(direction.x, direction.y), to, move);
-            FindConsecutiveAttacks(pawns, new Vector2Int(direction.x, direction.y * -1), to, move);
+            FindAttacks(pawns, new Vector2Int(direction.x, direction.y), to, move);
+            FindAttacks(pawns, new Vector2Int(direction.x * -1, direction.y), to, move);
+
+            if (pawn.IsQueen)
+            {
+                FindAttacks(pawns, new Vector2Int(direction.x, direction.y * -1), to, move);
+                FindAttacks(pawns, new Vector2Int(direction.x * -1, direction.y * -1), to, move);
+            }
         }
 
-        private bool CheckAttack(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from,
-            out Vector2Int to,
+        private bool HasAttack(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from, Vector2Int to,
             out Pawn pawn)
         {
             pawn = null;
-            to = new Vector2Int(from.x + direction.x * 2, from.y + direction.y * 2);
-            if (IsOutsideBoard(to)) return true;
-            if (TargetCellNotEmpty(pawns, to)) return true;
+            if (IsOutsideBoard(to)) return false;
+            if (TargetCellNotEmpty(pawns, to)) return false;
 
             pawn = pawns.FirstOrDefault(p =>
                 p.Position.x == from.x + direction.x && p.Position.y == from.y + direction.y);
-            if (pawn == null || pawn.IsWhite == IsWhite) return true;
-            return false;
-        }
-
-        private void FindConsecutiveAttacks(IReadOnlyCollection<Pawn> pawns, Vector2Int direction, Vector2Int from,
-            Move previousMove)
-        {
-            if (CheckAttack(pawns, direction, from, out var to, out var pawn)) return;
-
-            previousMove.hits.Add(pawn);
-            previousMove.endPos = to;
-
-            // get multiple attacks 
-            FindConsecutiveAttacks(pawns, new Vector2Int(direction.x, direction.y), to, previousMove);
-            FindConsecutiveAttacks(pawns, new Vector2Int(direction.x, direction.y * -1), to, previousMove);
+            if (pawn == null || pawn.IsWhite == IsWhite) return false;
+            return true;
         }
 
         private bool IsOutsideBoard(Vector2Int to)
@@ -155,13 +163,13 @@ namespace Code.Logic
         {
             if (_view)
             {
-                _view.transform.position = new Vector3(move.endPos.x, move.endPos.y, 0);
+                _view.transform.position = new Vector3(move.EndPos.x, move.EndPos.y, 0);
             }
 
-            Position = new Vector2Int(move.endPos.x, move.endPos.y);
+            Position = new Vector2Int(move.EndPos.x, move.EndPos.y);
 
-            if (IsWhite && move.endPos.y == _boardSize - 1 ||
-                !IsWhite && move.endPos.y == 0)
+            if (IsWhite && move.EndPos.y == _boardSize - 1 ||
+                !IsWhite && move.EndPos.y == 0)
             {
                 IsQueen = true;
             }

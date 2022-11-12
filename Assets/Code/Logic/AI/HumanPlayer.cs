@@ -74,7 +74,7 @@ namespace Code.Logic.AI
             {
                 if (!hasHit || move.IsAttack)
                 {
-                    _boardManager.AnimateMoves(move, move.IsAttack);
+                    _boardManager.AnimateMoves(move);
                 }
             }
         }
@@ -107,12 +107,12 @@ namespace Code.Logic.AI
                     var attacks = pawn.Moves.Where(p => p.IsAttack).ToList();
                     foreach (var attack in attacks)
                     {
-                        _boardManager.AnimateMoves(attack, true);
+                        _boardManager.AnimateMoves(attack);
                     }
 
                     if (attacks.Count > 0)
                     {
-                        Debug.Log("You have hit!");
+                        Debug.Log($"You have hit with: {string.Join(", ", attacks.Select(a => a.Pawn.Position))}!");
                         return true;
                     }
                 }

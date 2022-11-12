@@ -103,7 +103,7 @@ namespace Code.Logic
             {
                 _turnCounter++;
                 _isWhiteTurn = !_isWhiteTurn;
-                _selected = move.pawn;
+                _selected = move.Pawn;
                 _selected.Move(move);
                 AttackPawn(move, pawns);
                 pawns.GenerateMoves();
@@ -114,9 +114,9 @@ namespace Code.Logic
             return _isWhiteTurn ? GameResult.BlackWin : GameResult.WhiteWin;
         }
 
-        private void AttackPawn(Move move, List<Pawn> pawns)
+        private void AttackPawn(Move move, ICollection<Pawn> pawns)
         {
-            foreach (var hit in move.hits)
+            foreach (var hit in move.Hits)
             {
                 _lastAttackTurn = _turnCounter;
                 pawns.Remove(hit);

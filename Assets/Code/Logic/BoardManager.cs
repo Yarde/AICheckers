@@ -45,10 +45,12 @@ namespace Code.Logic
             Pawns.GenerateMoves();
         }
 
-        public void AnimateMoves(Move move, bool isAttack)
+        public void AnimateMoves(Move move)
         {
-            var field = _board[move.endPos.y, move.endPos.x];
-            field.Highlight(isAttack).Forget();
+            var target = _board[move.EndPos.y, move.EndPos.x];
+            var source = _board[move.StartPos.y, move.StartPos.x];
+            target.Highlight(move.Hits.Count > 0).Forget();
+            source.Highlight(false).Forget();
         }
     }
 }
