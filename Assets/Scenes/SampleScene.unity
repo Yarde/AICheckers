@@ -320,7 +320,7 @@ MonoBehaviour:
     algorithmType: 0
     functionType: 2
     searchDepth: 4
-    useEndgameHeuristic: 0
+    useEndgameHeuristic: 1
     randomStartMoves: 0
   blackPlayerData:
     algorithmType: 2

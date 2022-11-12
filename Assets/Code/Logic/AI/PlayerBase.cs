@@ -52,7 +52,7 @@ namespace Code.Logic.AI
                 return int.MinValue;
             }
 
-            if (_endgame && _evaluator.GetType() == typeof(EndgameEvaluator) && state.Where(p => p.IsMine(_isWhitePlayer)).All(p => p.IsQueen))
+            if (_endgame && _evaluator.GetType() != typeof(EndgameEvaluator) && state.Where(p => p.IsMine(_isWhitePlayer)).All(p => p.IsQueen))
             {
                 _evaluator = new EndgameEvaluator();
             }

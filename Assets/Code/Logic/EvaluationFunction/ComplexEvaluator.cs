@@ -10,7 +10,7 @@ namespace Code.Logic.EvaluationFunction
             foreach (var pawn in state)
             {
                 var pawnValue = pawn.IsQueen ? 40 : 20;
-                pawnValue += pawn.Moves.Count * 2;
+                pawnValue += pawn.Moves.Count * 1;
                 pawnValue += pawn.IsSafe ? 5 : 0;
                 pawnValue -= pawn.DistanceToPromotion * 1;
 
